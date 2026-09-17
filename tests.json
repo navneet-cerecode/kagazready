@@ -373,16 +373,16 @@
       "description": "With prefers-reduced-motion, the interface is immediately complete and no information depends on animation.",
       "type": "frontend",
       "status": "passing",
-      "evidence": "npm run test -w @kagazready/web -- 20 tests passed (Vitest + Testing Library, API client mocked, fixtures built from the real rule engine)",
+      "evidence": "npm run test -w @kagazready/web -- 20 tests passed (Vitest + Testing Library, API client mocked, fixtures built from the real rule engine) Also the Playwright reduced-motion project passed the full journey on the public URL.",
       "lastRun": "2026-09-18"
     },
     {
       "id": "e2e-demo-journey",
       "description": "Playwright: load app, run Needs Review sample, verify masked evidence, replace the problem document, reach No issues found, delete, confirm it cannot be reopened.",
       "type": "e2e",
-      "status": "not_run",
-      "evidence": "apps/web/e2e/journey.spec.ts written (desktop, Pixel 7, reduced-motion projects). Playwright 1.63 needs chromium_headless_shell-1243, not yet downloaded. The same journey was driven manually in a real browser on https://main.d109ovvm872kui.amplifyapp.com on 2026-09-18: Needs review -> No issues found -> Deleted -> API 404.",
-      "lastRun": null
+      "status": "passing",
+      "evidence": "E2E_BASE_URL=https://main.d109ovvm872kui.amplifyapp.com npx playwright test -> 15 passed in 26.4s across desktop-chromium, mobile-chromium (Pixel 7) and reduced-motion projects. Each project ran the full journey against real S3/Textract: Needs review with masked evidence -> corrected bank proof -> No issues found -> delete -> API 404. Also: PDF refused before upload, hi/gu switching, drawer, CLS < 0.1 and no console errors.",
+      "lastRun": "2026-09-18"
     },
     {
       "id": "aws-textract-smoke",
@@ -493,7 +493,7 @@
       "description": "Animation review run; motion is purposeful, causes no layout shift, and is verified on a mid-range mobile viewport.",
       "type": "review",
       "status": "not_run",
-      "evidence": "Scheduled for phases 9 and 11.",
+      "evidence": "Playwright asserts CLS < 0.1 on first render in all three projects. Animation review itself still to run.",
       "lastRun": null
     },
     {
@@ -546,9 +546,9 @@
     }
   ],
   "summary": {
-    "passing": 60,
-    "not_run": 6,
-    "blocked": 1
+    "passing": 61,
+    "blocked": 1,
+    "not_run": 5
   },
   "deployment": {
     "apiBaseUrl": "https://qev138fuyk.execute-api.ap-south-1.amazonaws.com/prod",
