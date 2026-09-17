@@ -225,6 +225,10 @@ as passing that has not actually run.
    fallback are documented" is an accepted outcome. If the quota is raised before submission,
    redeploy with the model ID and run the en/hi/gu smoke test.
 
+   **AWS Support case submitted 2026-09-18** (Service limit increase → General, Basic Support,
+   ~24h response) requesting the three Nova Lite quotas be raised to AWS defaults. The user
+   submitted it from the console after reviewing the filled form.
+
 2. **Ponytail plugin is not installed.** The user has the two commands. Until it is present, its
    published principles are applied manually (no unnecessary features, reuse before writing, prefer
    platform capabilities, prefer installed dependencies, minimum maintainable implementation, never
