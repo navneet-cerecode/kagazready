@@ -194,9 +194,9 @@
 }
 
 /*
- * Proof marks. A mark is a short vertical stroke in the gutter plus the text it points at; the
- * colour of the stroke is the status. On wide screens the gutter is real; on phones the stroke
- * hugs the left edge of the entry.
+ * Proof marks. A mark is a short stroke in the gutter beside the line it points at — the height of
+ * the title line, not the whole entry — and its colour is the status. A full-height coloured bar
+ * would turn the entry into a card with a side-tab, which is precisely not this world.
  */
 @utility mark-amber {
   --mark: var(--color-amber);
@@ -215,8 +215,8 @@
   content: '';
   position: absolute;
   left: 0;
-  top: 0.35rem;
-  bottom: 0.35rem;
+  top: 1.55rem;
+  height: 1.25rem;
   width: 3px;
   border-radius: var(--radius-hair);
   background: var(--mark, var(--color-line-strong));
