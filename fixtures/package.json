@@ -1,0 +1,20 @@
+{
+  "name": "@kagazready/fixtures",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "generate": "node src/generate.mjs",
+    "test": "vitest run",
+    "test:live": "vitest run --mode live"
+  },
+  "dependencies": {
+    "@aws-sdk/client-textract": "^3.716.0",
+    "@kagazready/contracts": "*",
+    "@kagazready/rules": "*",
+    "@napi-rs/canvas": "^1.0.9"
+  },
+  "devDependencies": {
+    "vitest": "^5.0.1"
+  }
+}

@@ -386,11 +386,11 @@
     },
     {
       "id": "aws-textract-smoke",
-      "description": "Real Textract DetectDocumentText processes the synthetic fixtures and returns the expected fields and confidences.",
+      "description": "Real Textract DetectDocumentText processes the synthetic fixtures; scenario A reaches needs_review with exactly the expected two findings and scenario B reaches no_issues_found.",
       "type": "aws",
-      "status": "not_run",
-      "evidence": "Textract ACCESS confirmed on the live account: detect-document-text returned Blocks for a probe image. The fixture end-to-end run still needs the fixtures generator.",
-      "lastRun": null
+      "status": "passing",
+      "evidence": "RUN_AWS_TESTS=1 npm run test -w @kagazready/fixtures -- 8 tests passed against real Textract in ap-south-1. Scenario A: needs_review with field_unclear_low_confidence + name_material_difference. Scenario B: no_issues_found, zero findings. All required fields extracted from real OCR. Account number masked as XXXXXXXX7745 in the real readings.",
+      "lastRun": "2026-09-18"
     },
     {
       "id": "aws-bedrock-smoke",
@@ -519,11 +519,27 @@
       "status": "passing",
       "evidence": "sam deploy -> Successfully created/updated stack kagazready in ap-south-1; https://qev138fuyk.execute-api.ap-south-1.amazonaws.com/prod/health -> 200",
       "lastRun": "2026-09-18"
+    },
+    {
+      "id": "fixture-calibration",
+      "description": "The unclear-field fixture is measured against real Textract and genuinely falls below the rule threshold; the threshold is never adjusted to fit the image.",
+      "type": "aws",
+      "status": "passing",
+      "evidence": "fixtures/out/calibration.txt: threshold 88%. clean 99.4%, pixelated-2x 99.3%, pixelated-3x 98.7% (all too clean); faint, pixelated-4x and pixelated-3x-scratched not detected at all; scratched 61.9% - detected, plausible length, last four digits correct. scratched chosen.",
+      "lastRun": "2026-09-18"
+    },
+    {
+      "id": "fixture-synthetic-marking",
+      "description": "Every generated fixture carries SYNTHETIC DEMO DOCUMENT - NOT VALID and contains no government logo, bank branding or seal.",
+      "type": "aws",
+      "status": "passing",
+      "evidence": "Rendered and visually inspected 2026-09-18: red stamp at the top plus a diagonal SYNTHETIC - NOT VALID watermark and a footer disclaimer on all four documents.",
+      "lastRun": "2026-09-18"
     }
   ],
   "summary": {
-    "passing": 42,
-    "not_run": 21,
+    "passing": 45,
+    "not_run": 20,
     "blocked": 1
   },
   "deployment": {

@@ -19,7 +19,9 @@ Claude Code session.
 - Stack: `kagazready`, region `ap-south-1`
 - Bedrock: intentionally unconfigured (see blocker 1). Everything else is real.
 
-Next code work is the fixtures generator, then the real Textract end-to-end run, then the frontend.
+**The synthetic fixtures are generated and the real Textract run passes end to end.** Scenario A
+reaches `needs_review` with exactly the expected two findings, and scenario B reaches
+`no_issues_found`, both through real Amazon Textract. Next code work is the frontend.
 
 ## Environment audit (2026-09-17)
 
@@ -86,6 +88,40 @@ No pre-existing or uncommitted user work existed in this directory. Nothing was 
    CommonJS output as ESM and the handler export vanished. Each `dist/<name>/package.json` now sets
    `"type": "commonjs"`, and `build.mjs` loads every bundle and asserts the handler export, so a
    bundle that builds but cannot run fails the build instead of failing in Lambda.
+
+### Textract confidence is close to bimodal on synthetic text
+
+Getting a genuine "unclear field" finding was the hardest part of the fixtures, and the first three
+attempts were all wrong in an instructive way.
+
+Blur plus low contrast does almost nothing to Textract's reported confidence. A heavily blurred,
+pale account number was still read at **97.9%**, and past a certain point the line stopped being
+detected at all — there was no usable middle band. Worse, when the line disappeared, a loose
+"find the line with digits" helper silently matched the nine-digit **MICR** line instead and
+reported a healthy confidence for entirely the wrong line.
+
+What actually lowers confidence is glyph _ambiguity_, not faintness. Measured (see
+`fixtures/out/calibration.txt`, threshold 88%):
+
+| Quality                  | Value confidence | Outcome                      |
+| ------------------------ | ---------------- | ---------------------------- |
+| `clean`                  | 99.4%            | too clean                    |
+| `pixelated-2x`           | 99.3%            | too clean                    |
+| `pixelated-3x`           | 98.7%            | too clean                    |
+| `pixelated-4x`           | not detected     | would report a missing field |
+| `faint`                  | not detected     | would report a missing field |
+| `pixelated-3x-scratched` | not detected     | would report a missing field |
+| **`scratched`**          | **61.9%**        | **chosen**                   |
+
+`scratched` also makes Textract misread one digit: `3049 8812 7745` comes back as
+`3049 0812 7745`. That misread is the reason it is the right fixture rather than a defect in it — a
+value OCR is unsure about _and got wrong_ is exactly what the confidence rule exists to catch. The
+product never claims the value is correct; it says the field is hard to read and asks for a clearer
+photo. The masked evidence shown to the user is the last four digits, which are read correctly, so
+nothing incorrect is ever displayed.
+
+The threshold was never moved to accommodate an image. The test asserts that if the last four
+digits ever stop being read correctly, a different quality must be chosen — not a lower threshold.
 
 ### Two bugs that only a real deployment could find
 
@@ -230,11 +266,10 @@ per-request, and S3 holds a few kilobytes that expire within a day.
 
 ## Next action
 
-1. `fixtures/` — generate the synthetic document images programmatically, with the account-number
-   band deliberately degraded so real Textract returns low confidence rather than the threshold
-   being tuned to fit.
-2. `apps/web` — the frontend, starting with an Impeccable design direction pass.
-3. Amplify Hosting, then update the stack's `AllowedOrigin` from `http://localhost:5173` to the
+1. `apps/web` — the frontend, starting with an Impeccable design direction pass. It needs the
+   generated PNGs as static assets; `npm run fixtures -- apps/web/public/samples` writes them
+   wherever the build wants them.
+2. Amplify Hosting, then update the stack's `AllowedOrigin` from `http://localhost:5173` to the
    deployed frontend origin. The API URL does not change.
-4. When account verification completes: redeploy with
+3. When account verification completes: redeploy with
    `BedrockModelId=anthropic.claude-3-haiku-20240307-v1:0` and run the Bedrock smoke test.
