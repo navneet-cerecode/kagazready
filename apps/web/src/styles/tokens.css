@@ -1,0 +1,229 @@
+@import 'tailwindcss';
+
+/* Self-hosted, OFL-licensed. No request leaves the page for a font. */
+@import '@fontsource/spectral/500.css';
+@import '@fontsource/spectral/600.css';
+@import '@fontsource-variable/public-sans';
+@import '@fontsource/noto-sans-devanagari/400.css';
+@import '@fontsource/noto-sans-devanagari/600.css';
+@import '@fontsource/noto-sans-gujarati/400.css';
+@import '@fontsource/noto-sans-gujarati/600.css';
+
+/*
+ * KagazReady design tokens — the proofreader's galley.
+ *
+ * The page is a warm paper sheet with ink-navy structure. Colour is reserved by law: amber means
+ * "needs review", red means "missing" or "destructive", teal is the one primary action. Nothing
+ * else on the page is coloured. Depth is drawn with hairlines, not shadows; the single elevated
+ * surface is the architecture drawer.
+ */
+@theme {
+  /* Paper and ink */
+  --color-paper: #f6f1e7;
+  --color-paper-deep: #ede6d6;
+  --color-paper-bright: #fbf8f1;
+  --color-ink: #0f1f3d;
+  --color-ink-soft: #2b3a5c;
+  --color-graphite: #2f3338;
+  --color-graphite-soft: #5b6169;
+  --color-graphite-faint: #8a9099;
+  --color-line: rgb(15 31 61 / 0.14);
+  --color-line-strong: rgb(15 31 61 / 0.32);
+
+  /* The one action */
+  --color-teal: #1f6f78;
+  --color-teal-deep: #164f56;
+  --color-teal-tint: #e2efef;
+
+  /* Status — the only other colour on the page */
+  --color-amber: #c47d12;
+  --color-amber-ink: #7c4f05;
+  --color-amber-tint: #f7ead3;
+  --color-red: #a3251a;
+  --color-red-ink: #7e1b12;
+  --color-red-tint: #f4dfdb;
+
+  /* Type */
+  --font-display: 'Spectral', 'Noto Sans Devanagari', 'Noto Sans Gujarati', Georgia, serif;
+  --font-sans:
+    'Public Sans Variable', 'Noto Sans Devanagari', 'Noto Sans Gujarati', system-ui, sans-serif;
+  --font-mono: ui-monospace, 'Cascadia Mono', 'SF Mono', Menlo, Consolas, monospace;
+
+  --text-display: 2rem;
+  --text-display--line-height: 1.15;
+  --text-display-lg: 2.625rem;
+  --text-display-lg--line-height: 1.1;
+  --text-heading: 1.375rem;
+  --text-heading--line-height: 1.25;
+  --text-body: 1rem;
+  --text-body--line-height: 1.55;
+  --text-small: 0.875rem;
+  --text-small--line-height: 1.5;
+  --text-micro: 0.75rem;
+  --text-micro--line-height: 1.4;
+
+  /* Shape */
+  --radius-hair: 2px;
+  --radius-sm: 4px;
+  --radius-md: 6px;
+
+  /* The one elevated surface */
+  --shadow-drawer: 0 18px 40px -18px rgb(15 31 61 / 0.45), 0 2px 6px -2px rgb(15 31 61 / 0.2);
+
+  /* Motion */
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-in: cubic-bezier(0.4, 0, 1, 1);
+  --duration-micro: 120ms;
+  --duration-state: 240ms;
+  --duration-sequence: 420ms;
+}
+
+/* ------------------------------------------------------------------------- */
+/* Base: the browser surfaces nobody draws still carry the design.           */
+/* ------------------------------------------------------------------------- */
+
+@layer base {
+  :root {
+    color-scheme: light;
+    accent-color: var(--color-teal);
+  }
+
+  html {
+    background: var(--color-paper);
+    color: var(--color-graphite);
+    font-family: var(--font-sans);
+    font-size: 16px;
+    -webkit-text-size-adjust: 100%;
+    text-rendering: optimizeLegibility;
+  }
+
+  /* Hindi and Gujarati lead with their own faces so conjuncts and matras render correctly. */
+  html[lang='hi'] {
+    font-family: 'Noto Sans Devanagari', 'Public Sans Variable', system-ui, sans-serif;
+  }
+  html[lang='gu'] {
+    font-family: 'Noto Sans Gujarati', 'Public Sans Variable', system-ui, sans-serif;
+  }
+  html[lang='hi'] .font-display {
+    font-family: 'Noto Sans Devanagari', 'Spectral', serif;
+  }
+  html[lang='gu'] .font-display {
+    font-family: 'Noto Sans Gujarati', 'Spectral', serif;
+  }
+
+  body {
+    margin: 0;
+    min-height: 100dvh;
+    background: var(--color-paper);
+    /* The paper has a faint grain: two very soft radial fields, nothing that reads as a gradient. */
+    background-image:
+      radial-gradient(1200px 600px at 20% -10%, rgb(255 255 255 / 0.55), transparent 60%),
+      radial-gradient(900px 500px at 100% 110%, rgb(15 31 61 / 0.04), transparent 60%);
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  ::selection {
+    background: var(--color-teal-tint);
+    color: var(--color-ink);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-teal);
+    outline-offset: 2px;
+    border-radius: var(--radius-hair);
+  }
+
+  input,
+  button,
+  textarea {
+    font: inherit;
+    color: inherit;
+  }
+
+  /* Every number on this page is data: tabular figures, always. */
+  .tabular,
+  code,
+  kbd,
+  .font-mono {
+    font-variant-numeric: tabular-nums;
+  }
+
+  a {
+    color: var(--color-teal);
+    text-decoration: underline;
+    text-underline-offset: 0.18em;
+    text-decoration-thickness: 1px;
+  }
+
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: var(--color-line-strong) transparent;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}
+
+/* ------------------------------------------------------------------------- */
+/* The galley: ruled rows, a gutter for marks.                                */
+/* ------------------------------------------------------------------------- */
+
+@utility rule-y {
+  border-top: 1px solid var(--color-line);
+  border-bottom: 1px solid var(--color-line);
+}
+
+@utility hairline {
+  border: 1px solid var(--color-line);
+}
+
+@utility hairline-b {
+  border-bottom: 1px solid var(--color-line);
+}
+
+@utility hairline-t {
+  border-top: 1px solid var(--color-line);
+}
+
+/*
+ * Proof marks. A mark is a short vertical stroke in the gutter plus the text it points at; the
+ * colour of the stroke is the status. On wide screens the gutter is real; on phones the stroke
+ * hugs the left edge of the entry.
+ */
+@utility mark-amber {
+  --mark: var(--color-amber);
+}
+@utility mark-red {
+  --mark: var(--color-red);
+}
+@utility mark-none {
+  --mark: var(--color-line-strong);
+}
+
+@utility mark-stroke {
+  position: relative;
+}
+.mark-stroke::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0.35rem;
+  bottom: 0.35rem;
+  width: 3px;
+  border-radius: var(--radius-hair);
+  background: var(--mark, var(--color-line-strong));
+}
+
+/* Focus ring for custom controls that cannot use :focus-visible alone (file inputs). */
+@utility ring-focus {
+  outline: 2px solid var(--color-teal);
+  outline-offset: 2px;
+}

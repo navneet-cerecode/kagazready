@@ -25,8 +25,12 @@ build/
 .claude/agents/
 .agents/
 
-# third-party dev-tool caches and generated previews
-.impeccable/
+# third-party dev-tool caches and generated previews.
+# The surface brief under .impeccable/surfaces is design intent, not a cache, and is kept.
+.impeccable/*
+!.impeccable/surfaces/
+apps/web/.impeccable/*
+!apps/web/.impeccable/surfaces/
 .impeccable-cache/
 **/impeccable-screenshots/
 .skills-cache/
