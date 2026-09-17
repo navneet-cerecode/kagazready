@@ -10,6 +10,18 @@ import { z } from 'zod';
 
 const positiveInt = (fallback: number) => z.coerce.number().int().positive().default(fallback);
 
+/**
+ * An optional environment variable, where "not set" and "set to empty" mean the same thing.
+ *
+ * CloudFormation passes an unset template parameter through as an empty string, not as an absent
+ * variable, so `z.string().min(1).optional()` rejects it. That failure took down config parsing on
+ * the deployed stack while every local test passed.
+ */
+const optionalEnv = z.preprocess(
+  (value) => (typeof value === 'string' && value.trim() === '' ? undefined : value),
+  z.string().min(1).optional(),
+);
+
 const EnvSchema = z.object({
   UPLOAD_BUCKET: z.string().min(1),
   TABLE_NAME: z.string().min(1),
@@ -18,13 +30,13 @@ const EnvSchema = z.object({
   AWS_REGION: z.string().min(1),
 
   /** Bedrock can live in a different region from the rest of the stack. */
-  BEDROCK_REGION: z.string().min(1).optional(),
+  BEDROCK_REGION: optionalEnv,
   /**
    * Verified per account and region with `aws bedrock list-foundation-models`. There is deliberately
    * no default: a wrong guess would either fail at runtime or silently pick an expensive model.
    * When unset, explanations fall back to reviewed English copy and the analysis still works.
    */
-  BEDROCK_MODEL_ID: z.string().min(1).optional(),
+  BEDROCK_MODEL_ID: optionalEnv,
 
   /** Exact frontend origin allowed to call the API. `*` is rejected outside local development. */
   ALLOWED_ORIGIN: z.string().min(1),

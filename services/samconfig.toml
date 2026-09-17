@@ -24,8 +24,17 @@ lint = true
 
 [default.deploy.parameters]
 capabilities = "CAPABILITY_IAM"
-confirm_changeset = true
+confirm_changeset = false
 resolve_s3 = true
-# Empty BedrockModelId is intentional until the model is verified with
-# `aws bedrock list-foundation-models`. The analysis works without it.
-parameter_overrides = "Stage=prod BedrockModelId= DailyAnalysisCap=150"
+# BedrockModelId is deliberately empty for the first deploy.
+#
+# anthropic.claude-3-haiku-20240307-v1:0 is available on-demand in ap-south-1 and is the intended
+# model, but on 2026-09-18 Bedrock returned AccessDeniedException "Your account is currently being
+# verified" for this account. An empty model ID is a supported configuration: no Bedrock call is
+# made at all, the deterministic analysis is unaffected, and explanations use reviewed English
+# fallback copy with explanationsDegraded reported as true. Set the model ID once verification
+# completes.
+#
+# AllowedOrigin starts as the local dev server because Amplify Hosting does not exist yet. It must
+# be updated to the deployed frontend origin before the public demo; the API URL does not change.
+parameter_overrides = "Stage=prod BedrockModelId= BedrockRegion= DailyAnalysisCap=150 AllowedOrigin=http://localhost:5173"

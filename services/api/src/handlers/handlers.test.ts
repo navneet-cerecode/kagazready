@@ -823,6 +823,34 @@ describe('cross-cutting guarantees', () => {
     expect(raw).not.toContain('on fire');
   });
 
+  it('still returns a well-formed error when the configuration itself is broken', async () => {
+    // The error path used to call config() for the CORS header, so a bad configuration took the
+    // error handler down with it and API Gateway answered with its own bare 500 instead.
+    delete process.env.UPLOAD_BUCKET;
+    resetConfigCache();
+
+    const response = await analysisHandler(
+      event('GET /analyses/{analysisId}', { pathParameters: { analysisId: ANALYSIS_ID } }),
+    );
+
+    expect(result(response).statusCode).toBe(500);
+    expect(bodyOf<ApiError>(response).error.code).toBe('internal_error');
+    expect(bodyOf<ApiError>(response).error.correlationId).toMatch(/^[0-9a-f]{16}$/);
+    expect(result(response).headers?.['access-control-allow-origin']).toBeUndefined();
+  });
+
+  it('treats an empty BEDROCK_MODEL_ID as unconfigured rather than crashing', async () => {
+    // CloudFormation passes an unset parameter as an empty string.
+    process.env.BEDROCK_MODEL_ID = '';
+    resetConfigCache();
+
+    const response = await analysesHandler(createAnalysisEvent());
+
+    expect(result(response).statusCode).toBe(201);
+    expect(bodyOf<AnalysisResponse>(response).status).toBe('needs_review');
+    expect(bodyOf<AnalysisResponse>(response).explanationsDegraded).toBe(true);
+  });
+
   it('routes an unknown route to a not found rather than a crash', async () => {
     const response = await analysesHandler(event('PATCH /analyses'));
 

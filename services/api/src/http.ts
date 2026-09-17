@@ -82,14 +82,27 @@ function securityHeaders(): Record<string, string> {
   };
 }
 
+/**
+ * CORS headers, tolerant of a broken configuration.
+ *
+ * Error responses go through here too, so if this threw, a configuration problem would take the
+ * error handler down with it and the caller would get API Gateway's bare 500 instead of a usable
+ * message. That happened on the first deployment. A misconfigured stage still answers with a
+ * well-formed error; it just cannot state an allowed origin.
+ */
 function corsHeaders(): Record<string, string> {
-  return {
-    'access-control-allow-origin': config().allowedOrigin,
+  const common = {
     'access-control-allow-headers': 'content-type',
     'access-control-allow-methods': 'GET,POST,PUT,DELETE,OPTIONS',
     'access-control-max-age': '600',
     vary: 'origin',
   };
+
+  try {
+    return { 'access-control-allow-origin': config().allowedOrigin, ...common };
+  } catch {
+    return common;
+  }
 }
 
 export function jsonResponse(

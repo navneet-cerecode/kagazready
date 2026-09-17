@@ -13,10 +13,13 @@ Claude Code session.
 
 ## Current milestone
 
-**Phase 4 infrastructure builds and validates locally; deployment blocked on credentials only.**
-The backend is implemented and tested against mocked AWS clients, the SAM template validates and
-lints, and all four Lambda bundles build and load. Next code work is the fixtures generator and the
-frontend.
+**Phase 4 complete — the stack is deployed and live in ap-south-1.**
+
+- API base URL: `https://qev138fuyk.execute-api.ap-south-1.amazonaws.com/prod`
+- Stack: `kagazready`, region `ap-south-1`
+- Bedrock: intentionally unconfigured (see blocker 1). Everything else is real.
+
+Next code work is the fixtures generator, then the real Textract end-to-end run, then the frontend.
 
 ## Environment audit (2026-09-17)
 
@@ -84,6 +87,22 @@ No pre-existing or uncommitted user work existed in this directory. Nothing was 
    `"type": "commonjs"`, and `build.mjs` loads every bundle and asserts the handler export, so a
    bundle that builds but cannot run fails the build instead of failing in Lambda.
 
+### Two bugs that only a real deployment could find
+
+Both were invisible to 176 passing local tests, and both are now pinned by regression tests.
+
+1. **CloudFormation passes an unset parameter as an empty string, not as an absent variable.**
+   `BEDROCK_MODEL_ID` was `z.string().min(1).optional()`, which accepts absent but rejects empty, so
+   config parsing threw on every invocation of the two functions carrying that variable. Local tests
+   passed because they _deleted_ the variable instead of setting it to empty. Optional environment
+   variables now treat empty and absent as the same thing.
+
+2. **The error path depended on the configuration it was reporting on.** `corsHeaders()` called
+   `config()`, and it is on the error path, so when config threw the error handler threw too and API
+   Gateway replaced our response with its own bare "Internal Server Error" — losing the status code,
+   the error code and the correlation ID. `corsHeaders()` now tolerates a broken config and omits
+   only the origin header.
+
 ### Design decisions worth remembering
 
 - **Localization does not depend on Bedrock.** Titles, reasons and suggested actions are static
@@ -148,10 +167,21 @@ as passing that has not actually run.
 
 ## Active blockers
 
-1. **No AWS credentials.** The CLIs are installed but there is no `~/.aws` and no `AWS_*`
-   environment variable. Only the user can supply this: Claude must not enter access keys. Blocks
-   deployment, real Textract, real Bedrock, and every `aws-*` check in `tests.json`. Does **not**
-   block the fixtures generator or the frontend.
+1. **Bedrock is blocked by AWS account verification, not by model access.**
+   `anthropic.claude-3-haiku-20240307-v1:0` is confirmed available on-demand in `ap-south-1` via
+   `aws bedrock list-foundation-models`, and it is the intended model. A real `Converse` call
+   returns: `AccessDeniedException: Your account is currently being verified. Verification normally
+takes less than 2 hours.`
+
+   Amazon Nova is not offered on-demand in `ap-south-1`; the Anthropic options there are Claude 3
+   Haiku and Claude 3 Sonnet, and Haiku is the cheaper.
+
+   The stack is deployed with `BEDROCK_MODEL_ID` empty, which is a supported configuration: no
+   Bedrock call is made, the deterministic analysis is unaffected, and explanations use reviewed
+   English fallback copy with `explanationsDegraded: true`. **Textract is not affected** — it was
+   probed on the live account and returned results. To finish: wait for verification, redeploy with
+   the model ID, run the Bedrock smoke test.
+
 2. **Ponytail plugin is not installed.** The user has the two commands. Until it is present, its
    published principles are applied manually (no unnecessary features, reuse before writing, prefer
    platform capabilities, prefer installed dependencies, minimum maintainable implementation, never
@@ -172,12 +202,23 @@ as passing that has not actually run.
 
 ## AWS resources created
 
-None yet.
+All inside CloudFormation stack `kagazready` in `ap-south-1`, so `sam delete` removes the lot:
+a private S3 upload bucket (BPA all four on, AES256, 1-day lifecycle, TLS-only policy), a
+PAY_PER_REQUEST DynamoDB table with TTL on `expiresAt`, an HTTP API and stage throttled to
+10 rps / 20 burst with CORS pinned to one origin, four arm64 Lambda functions with separate
+least-privilege roles, and five CloudWatch log groups at 7-day retention.
+
+Created **outside** the stack by `sam deploy --resolve-s3`: the `aws-sam-cli-managed-default`
+stack and its artefact bucket. `sam delete` does not remove these — delete them separately.
 
 ## Cleanup required
 
-Nothing yet. Every created resource will be listed here and in `docs/aws-cleanup.md` as it is
-created.
+1. `sam delete --stack-name kagazready --region ap-south-1`
+2. Delete the `aws-sam-cli-managed-default` stack and empty its artefact bucket.
+3. Delete the Amplify app once it exists.
+
+Nothing bills continuously while idle: DynamoDB is on-demand, Lambda and API Gateway are
+per-request, and S3 holds a few kilobytes that expire within a day.
 
 ## Known limitations
 
@@ -193,5 +234,7 @@ created.
    band deliberately degraded so real Textract returns low confidence rather than the threshold
    being tuned to fit.
 2. `apps/web` — the frontend, starting with an Impeccable design direction pass.
-3. Once credentials exist: verify the Bedrock model ID with `aws bedrock list-foundation-models`,
-   `sam deploy`, Amplify Hosting, then the real Textract and Bedrock smoke tests.
+3. Amplify Hosting, then update the stack's `AllowedOrigin` from `http://localhost:5173` to the
+   deployed frontend origin. The API URL does not change.
+4. When account verification completes: redeploy with
+   `BedrockModelId=anthropic.claude-3-haiku-20240307-v1:0` and run the Bedrock smoke test.

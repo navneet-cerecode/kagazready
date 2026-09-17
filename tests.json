@@ -1,6 +1,6 @@
 {
   "project": "KagazReady",
-  "updated": "2026-09-17",
+  "updated": "2026-09-18",
   "statusLegend": {
     "not_run": "Never executed. Do not claim it passes.",
     "passing": "Ran successfully; evidence recorded.",
@@ -165,112 +165,112 @@
       "description": "POST /uploads returns a presigned POST with randomized key, restricted prefix, short expiry, content-type condition, and content-length range.",
       "type": "backend",
       "status": "passing",
-      "evidence": "npm run test -w @kagazready/api -- 46 tests passed (1 file)",
-      "lastRun": "2026-09-17"
+      "evidence": "npm run test -w @kagazready/api -- 59 tests passed (2 files)",
+      "lastRun": "2026-09-18"
     },
     {
       "id": "api-reject-mime",
       "description": "An unsupported content type is rejected with 415 before any presign is issued.",
       "type": "backend",
       "status": "passing",
-      "evidence": "npm run test -w @kagazready/api -- 46 tests passed (1 file)",
-      "lastRun": "2026-09-17"
+      "evidence": "npm run test -w @kagazready/api -- 59 tests passed (2 files)",
+      "lastRun": "2026-09-18"
     },
     {
       "id": "api-reject-oversize",
       "description": "A declared size above 5 MB is rejected with 413.",
       "type": "backend",
       "status": "passing",
-      "evidence": "npm run test -w @kagazready/api -- 46 tests passed (1 file)",
-      "lastRun": "2026-09-17"
+      "evidence": "npm run test -w @kagazready/api -- 59 tests passed (2 files)",
+      "lastRun": "2026-09-18"
     },
     {
       "id": "api-reject-bad-key",
       "description": "An object key outside the analysis prefix is rejected and never sent to Textract.",
       "type": "backend",
       "status": "passing",
-      "evidence": "npm run test -w @kagazready/api -- 46 tests passed (1 file)",
-      "lastRun": "2026-09-17"
+      "evidence": "npm run test -w @kagazready/api -- 59 tests passed (2 files)",
+      "lastRun": "2026-09-18"
     },
     {
       "id": "api-missing-object",
       "description": "A referenced S3 object that does not exist produces a safe 400/409, not a 500.",
       "type": "backend",
       "status": "passing",
-      "evidence": "npm run test -w @kagazready/api -- 46 tests passed (1 file)",
-      "lastRun": "2026-09-17"
+      "evidence": "npm run test -w @kagazready/api -- 59 tests passed (2 files)",
+      "lastRun": "2026-09-18"
     },
     {
       "id": "api-textract-failure",
       "description": "A Textract error produces a safe error response with a correlation ID and no internal detail.",
       "type": "backend",
       "status": "passing",
-      "evidence": "npm run test -w @kagazready/api -- 46 tests passed (1 file)",
-      "lastRun": "2026-09-17"
+      "evidence": "npm run test -w @kagazready/api -- 59 tests passed (2 files)",
+      "lastRun": "2026-09-18"
     },
     {
       "id": "api-bedrock-failure",
       "description": "A Bedrock failure preserves the deterministic findings and falls back to predefined English explanations.",
       "type": "backend",
       "status": "passing",
-      "evidence": "npm run test -w @kagazready/api -- 46 tests passed (1 file)",
-      "lastRun": "2026-09-17"
+      "evidence": "npm run test -w @kagazready/api -- 59 tests passed (2 files)",
+      "lastRun": "2026-09-18"
     },
     {
       "id": "api-bedrock-invalid-json",
       "description": "Bedrock output failing schema validation is discarded; deterministic results and fallback explanations are returned.",
       "type": "backend",
       "status": "passing",
-      "evidence": "npm run test -w @kagazready/api -- 46 tests passed (1 file)",
-      "lastRun": "2026-09-17"
+      "evidence": "npm run test -w @kagazready/api -- 59 tests passed (2 files)",
+      "lastRun": "2026-09-18"
     },
     {
       "id": "api-expired-analysis",
       "description": "GET on an expired or unknown analysis ID returns 404 with a safe message.",
       "type": "backend",
       "status": "passing",
-      "evidence": "npm run test -w @kagazready/api -- 46 tests passed (1 file)",
-      "lastRun": "2026-09-17"
+      "evidence": "npm run test -w @kagazready/api -- 59 tests passed; also verified live (unknown id -> 404).",
+      "lastRun": "2026-09-18"
     },
     {
       "id": "api-delete",
       "description": "DELETE removes the DynamoDB item and every S3 object under the analysis prefix; a subsequent GET returns 404.",
       "type": "backend",
       "status": "passing",
-      "evidence": "npm run test -w @kagazready/api -- 46 tests passed (1 file)",
-      "lastRun": "2026-09-17"
+      "evidence": "npm run test -w @kagazready/api -- 59 tests passed (2 files)",
+      "lastRun": "2026-09-18"
     },
     {
       "id": "api-idempotent-repeat",
       "description": "A repeated analysis creation with the same idempotency key does not double-charge Textract.",
       "type": "backend",
       "status": "passing",
-      "evidence": "npm run test -w @kagazready/api -- 46 tests passed (1 file)",
-      "lastRun": "2026-09-17"
+      "evidence": "npm run test -w @kagazready/api -- 59 tests passed (2 files)",
+      "lastRun": "2026-09-18"
     },
     {
       "id": "api-daily-cap",
       "description": "Once the daily analysis cap is reached, new analyses are refused with a clear capacity message and no AWS spend.",
       "type": "backend",
       "status": "passing",
-      "evidence": "npm run test -w @kagazready/api -- 46 tests passed (1 file)",
-      "lastRun": "2026-09-17"
+      "evidence": "npm run test -w @kagazready/api -- 59 tests passed (2 files)",
+      "lastRun": "2026-09-18"
     },
     {
       "id": "api-safe-errors",
       "description": "No error response exposes stack traces, account IDs, bucket names, or credentials.",
       "type": "backend",
       "status": "passing",
-      "evidence": "npm run test -w @kagazready/api -- 46 tests passed (1 file)",
-      "lastRun": "2026-09-17"
+      "evidence": "59 mocked-client tests, plus live: unknown analysis -> 404 with our error shape and a correlation ID; malformed id -> 400. No internal detail in either body.",
+      "lastRun": "2026-09-18"
     },
     {
       "id": "api-health",
       "description": "GET /health returns service liveness without credentials, account IDs, stack traces, or unnecessary resource names.",
       "type": "backend",
       "status": "passing",
-      "evidence": "npm run test -w @kagazready/api -- 46 tests passed (1 file)",
-      "lastRun": "2026-09-17"
+      "evidence": "59 mocked-client tests, plus live: GET https://qev138fuyk.execute-api.ap-south-1.amazonaws.com/prod/health -> 200 with templateVersion 1.0.0 and no bucket/table/region/ARN in the body.",
+      "lastRun": "2026-09-18"
     },
     {
       "id": "web-empty-state",
@@ -388,8 +388,8 @@
       "id": "aws-textract-smoke",
       "description": "Real Textract DetectDocumentText processes the synthetic fixtures and returns the expected fields and confidences.",
       "type": "aws",
-      "status": "blocked",
-      "evidence": "No AWS CLI and no credentials configured yet.",
+      "status": "not_run",
+      "evidence": "Textract ACCESS confirmed on the live account: detect-document-text returned Blocks for a probe image. The fixture end-to-end run still needs the fixtures generator.",
       "lastRun": null
     },
     {
@@ -397,32 +397,32 @@
       "description": "Real Bedrock returns schema-valid explanations in en/hi/gu, or the exact access blocker is documented.",
       "type": "aws",
       "status": "blocked",
-      "evidence": "No AWS CLI and no credentials configured yet.",
+      "evidence": "anthropic.claude-3-haiku-20240307-v1:0 confirmed available on-demand in ap-south-1 via list-foundation-models. Converse returned AccessDeniedException: \"Your account is currently being verified. Verification normally takes less than 2 hours.\" Not a model-access problem. Deployed with BEDROCK_MODEL_ID empty; fallback path verified live.",
       "lastRun": null
     },
     {
       "id": "aws-s3-private",
       "description": "The upload bucket denies anonymous access and Block Public Access is on for all four settings.",
       "type": "aws",
-      "status": "blocked",
-      "evidence": "No AWS CLI and no credentials configured yet.",
-      "lastRun": null
+      "status": "passing",
+      "evidence": "Anonymous GET object -> HTTP 403 and anonymous LIST bucket -> HTTP 403. get-public-access-block shows all four settings true. Encryption AES256.",
+      "lastRun": "2026-09-18"
     },
     {
       "id": "aws-cors",
       "description": "Production CORS allows only the deployed frontend origin.",
       "type": "aws",
-      "status": "blocked",
-      "evidence": "No AWS CLI and no credentials configured yet.",
-      "lastRun": null
+      "status": "passing",
+      "evidence": "curl https://qev138fuyk.execute-api.ap-south-1.amazonaws.com/prod/health with Origin http://localhost:5173 -> access-control-allow-origin echoed; with Origin https://evil.example -> no allow-origin header returned.",
+      "lastRun": "2026-09-18"
     },
     {
       "id": "aws-retention",
       "description": "S3 lifecycle deletes within 1 day, DynamoDB TTL is enabled with a sub-24-hour expiry, CloudWatch retention is short.",
       "type": "aws",
-      "status": "blocked",
-      "evidence": "No AWS CLI and no credentials configured yet.",
-      "lastRun": null
+      "status": "passing",
+      "evidence": "S3 lifecycle delete-uploads-after-one-day Enabled at 1 day; DynamoDB TTL ENABLED on expiresAt; all five CloudWatch log groups at 7 days.",
+      "lastRun": "2026-09-18"
     },
     {
       "id": "build-lambda-bundles",
@@ -495,11 +495,42 @@
       "status": "not_run",
       "evidence": "Scheduled for phases 9 and 11.",
       "lastRun": null
+    },
+    {
+      "id": "config-empty-env",
+      "description": "An empty BEDROCK_MODEL_ID or BEDROCK_REGION (how CloudFormation passes an unset parameter) is treated as unconfigured, not as a validation failure.",
+      "type": "backend",
+      "status": "passing",
+      "evidence": "services/api/src/config.test.ts; regression from a live deployment failure on 2026-09-17",
+      "lastRun": "2026-09-18"
+    },
+    {
+      "id": "api-error-path-independent-of-config",
+      "description": "A broken configuration still yields a well-formed JSON error with a correlation ID rather than API Gateway's bare 500.",
+      "type": "backend",
+      "status": "passing",
+      "evidence": "handlers.test.ts; regression from the same live failure",
+      "lastRun": "2026-09-18"
+    },
+    {
+      "id": "deploy-stack",
+      "description": "The SAM stack deploys to ap-south-1 and the API answers.",
+      "type": "aws",
+      "status": "passing",
+      "evidence": "sam deploy -> Successfully created/updated stack kagazready in ap-south-1; https://qev138fuyk.execute-api.ap-south-1.amazonaws.com/prod/health -> 200",
+      "lastRun": "2026-09-18"
     }
   ],
   "summary": {
-    "passing": 36,
-    "not_run": 20,
-    "blocked": 5
+    "passing": 42,
+    "not_run": 21,
+    "blocked": 1
+  },
+  "deployment": {
+    "apiBaseUrl": "https://qev138fuyk.execute-api.ap-south-1.amazonaws.com/prod",
+    "region": "ap-south-1",
+    "stackName": "kagazready",
+    "bedrockModelId": "",
+    "note": "Bedrock model ID intentionally empty while the AWS account is pending verification."
   }
 }
