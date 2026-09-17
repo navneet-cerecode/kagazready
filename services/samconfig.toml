@@ -1,0 +1,31 @@
+version = 0.1
+
+# `build_in_source` is the important setting here.
+#
+# By default SAM copies CodeUri into a scratch directory and runs `npm install` in it. That breaks
+# for an npm workspace: `@kagazready/contracts` and `@kagazready/rules` are symlinks in the
+# repository's root node_modules, so npm looks for them on the public registry and fails with a 404.
+# Building in source leaves the code where it is, so ordinary Node resolution walks up to the root
+# node_modules and esbuild bundles the workspace packages from their TypeScript sources.
+#
+# Telemetry is disabled: this is a document-privacy project, and build metadata does not need to
+# leave the machine.
+
+[default.global.parameters]
+stack_name = "kagazready"
+region = "ap-south-1"
+
+[default.build.parameters]
+build_in_source = true
+cached = true
+
+[default.validate.parameters]
+lint = true
+
+[default.deploy.parameters]
+capabilities = "CAPABILITY_IAM"
+confirm_changeset = true
+resolve_s3 = true
+# Empty BedrockModelId is intentional until the model is verified with
+# `aws bedrock list-foundation-models`. The analysis works without it.
+parameter_overrides = "Stage=prod BedrockModelId= DailyAnalysisCap=150"

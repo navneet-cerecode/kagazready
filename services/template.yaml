@@ -1,0 +1,359 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: >
+  KagazReady — scholarship document readiness checks.
+  Private S3 for uploads, Textract for text extraction, deterministic rules in Lambda,
+  Bedrock for plain-language explanations only, DynamoDB with TTL for short-lived results.
+
+Parameters:
+  AllowedOrigin:
+    Type: String
+    Description: >
+      Exact origin of the deployed frontend, e.g. https://main.d123.amplifyapp.com.
+      Used for both API Gateway CORS and bucket CORS. Never set this to *.
+    AllowedPattern: ^https?://[A-Za-z0-9.:-]+$
+  Stage:
+    Type: String
+    Default: prod
+    AllowedValues: [dev, prod]
+  BedrockModelId:
+    Type: String
+    Default: ''
+    Description: >
+      On-demand Bedrock model ID or inference profile ID, verified for this account and region with
+      "aws bedrock list-foundation-models". Leave empty to run without Bedrock: the analysis still
+      works and explanations use reviewed English fallback copy.
+  BedrockRegion:
+    Type: String
+    Default: ''
+    Description: Region for Bedrock if different from the stack region. Empty means same region.
+  DailyAnalysisCap:
+    Type: Number
+    Default: 150
+    MinValue: 1
+    MaxValue: 2000
+    Description: Hard ceiling on analyses per UTC day. Protects the AWS credit budget.
+  AnalysisTtlSeconds:
+    Type: Number
+    Default: 21600
+    MinValue: 300
+    MaxValue: 86400
+    Description: How long a stored result survives. Must stay within 24 hours.
+  LogRetentionDays:
+    Type: Number
+    Default: 7
+    Description: CloudWatch log retention. Short by design — logs are for debugging, not records.
+
+Conditions:
+  HasBedrockRegion: !Not [!Equals [!Ref BedrockRegion, '']]
+
+Globals:
+  Function:
+    Runtime: nodejs22.x
+    # arm64 costs less per GB-second than x86_64 for identical work.
+    Architectures: [arm64]
+    MemorySize: 512
+    Timeout: 29
+    Tracing: Disabled
+    Environment:
+      Variables:
+        UPLOAD_BUCKET: !Ref UploadBucket
+        TABLE_NAME: !Ref AnalysisTable
+        ALLOWED_ORIGIN: !Ref AllowedOrigin
+        STAGE: !Ref Stage
+        ANALYSIS_TTL_SECONDS: !Ref AnalysisTtlSeconds
+        DAILY_ANALYSIS_CAP: !Ref DailyAnalysisCap
+        NODE_OPTIONS: --enable-source-maps
+
+Resources:
+  # ---------------------------------------------------------------------------
+  # Storage
+  # ---------------------------------------------------------------------------
+
+  UploadBucket:
+    Type: AWS::S3::Bucket
+    # Uploads are transient. Deleting the stack should not leave a bucket behind holding documents.
+    DeletionPolicy: Delete
+    UpdateReplacePolicy: Delete
+    Properties:
+      # All four settings on. This bucket must never become public.
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: AES256
+            BucketKeyEnabled: true
+      OwnershipControls:
+        Rules:
+          - ObjectOwnership: BucketOwnerEnforced
+      LifecycleConfiguration:
+        Rules:
+          # Documents are gone within a day even if nobody presses delete.
+          - Id: delete-uploads-after-one-day
+            Status: Enabled
+            Prefix: uploads/
+            ExpirationInDays: 1
+          - Id: abort-incomplete-uploads
+            Status: Enabled
+            AbortIncompleteMultipartUpload:
+              DaysAfterInitiation: 1
+      CorsConfiguration:
+        CorsRules:
+          - AllowedOrigins: [!Ref AllowedOrigin]
+            AllowedMethods: [POST]
+            AllowedHeaders: ['*']
+            ExposedHeaders: [ETag]
+            MaxAge: 600
+
+  # Denies any request that is not over TLS. Belt and braces alongside Block Public Access.
+  UploadBucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket: !Ref UploadBucket
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Sid: DenyInsecureTransport
+            Effect: Deny
+            Principal: '*'
+            Action: 's3:*'
+            Resource:
+              - !Sub '${UploadBucket.Arn}'
+              - !Sub '${UploadBucket.Arn}/*'
+            Condition:
+              Bool:
+                'aws:SecureTransport': false
+
+  AnalysisTable:
+    Type: AWS::DynamoDB::Table
+    DeletionPolicy: Delete
+    UpdateReplacePolicy: Delete
+    Properties:
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: pk
+          AttributeType: S
+      KeySchema:
+        - AttributeName: pk
+          KeyType: HASH
+      TimeToLiveSpecification:
+        AttributeName: expiresAt
+        Enabled: true
+      SSESpecification:
+        SSEEnabled: true
+
+  # ---------------------------------------------------------------------------
+  # API
+  # ---------------------------------------------------------------------------
+
+  HttpApi:
+    Type: AWS::Serverless::HttpApi
+    Properties:
+      StageName: !Ref Stage
+      CorsConfiguration:
+        AllowOrigins: [!Ref AllowedOrigin]
+        AllowMethods: [GET, POST, PUT, DELETE, OPTIONS]
+        AllowHeaders: [content-type]
+        MaxAge: 600
+      # A public demo needs a ceiling. These limits are generous for one person and hostile to a
+      # script trying to run up a Textract bill.
+      DefaultRouteSettings:
+        ThrottlingBurstLimit: 20
+        ThrottlingRateLimit: 10
+      AccessLogSettings:
+        DestinationArn: !GetAtt ApiAccessLogGroup.Arn
+        # Deliberately no request body, no query strings, no headers.
+        Format: '{"requestId":"$context.requestId","route":"$context.routeKey","status":"$context.status","latency":$context.responseLatency,"integrationStatus":"$context.integrationStatus"}'
+
+  ApiAccessLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub '/kagazready/${AWS::StackName}/api-access'
+      RetentionInDays: !Ref LogRetentionDays
+
+  # ---------------------------------------------------------------------------
+  # Functions
+  #
+  # Four functions rather than one, so that each carries only the permissions its routes need.
+  # The function that can spend money on Textract cannot delete anything; the function that can
+  # delete cannot call Textract or Bedrock; the health check can do neither.
+  # ---------------------------------------------------------------------------
+
+  UploadsLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub '/kagazready/${AWS::StackName}/uploads'
+      RetentionInDays: !Ref LogRetentionDays
+
+  UploadsFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: api/dist/uploads/
+      Handler: index.handler
+      Description: Issues constrained presigned S3 POSTs. No file bytes pass through it.
+      LoggingConfig:
+        LogGroup: !Ref UploadsLogGroup
+      Policies:
+        - Statement:
+            - Effect: Allow
+              Action: s3:PutObject
+              Resource: !Sub '${UploadBucket.Arn}/uploads/*'
+      Events:
+        CreateUpload:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref HttpApi
+            Method: POST
+            Path: /uploads
+
+  AnalysesLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub '/kagazready/${AWS::StackName}/analyses'
+      RetentionInDays: !Ref LogRetentionDays
+
+  AnalysesFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: api/dist/analyses/
+      Handler: index.handler
+      Description: Runs Textract, the deterministic rules, and the Bedrock explanation pass.
+      # Three Textract calls plus one Bedrock call, all sequentialised by the API timeout.
+      Timeout: 29
+      MemorySize: 1024
+      LoggingConfig:
+        LogGroup: !Ref AnalysesLogGroup
+      Environment:
+        Variables:
+          BEDROCK_MODEL_ID: !Ref BedrockModelId
+          BEDROCK_REGION: !If [HasBedrockRegion, !Ref BedrockRegion, !Ref 'AWS::Region']
+      Policies:
+        - Statement:
+            - Effect: Allow
+              Action: s3:GetObject
+              Resource: !Sub '${UploadBucket.Arn}/uploads/*'
+            - Effect: Allow
+              # DetectDocumentText is not resource-scoped by Textract.
+              Action: textract:DetectDocumentText
+              Resource: '*'
+            - Effect: Allow
+              Action: bedrock:InvokeModel
+              Resource:
+                - !Sub 'arn:${AWS::Partition}:bedrock:*::foundation-model/*'
+                - !Sub 'arn:${AWS::Partition}:bedrock:*:${AWS::AccountId}:inference-profile/*'
+            - Effect: Allow
+              Action:
+                - dynamodb:GetItem
+                - dynamodb:PutItem
+                - dynamodb:UpdateItem
+              Resource: !GetAtt AnalysisTable.Arn
+      Events:
+        CreateAnalysis:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref HttpApi
+            Method: POST
+            Path: /analyses
+        ReplaceDocument:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref HttpApi
+            Method: PUT
+            Path: /analyses/{analysisId}/documents/{documentType}
+
+  AnalysisLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub '/kagazready/${AWS::StackName}/analysis'
+      RetentionInDays: !Ref LogRetentionDays
+
+  AnalysisFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: api/dist/analysis/
+      Handler: index.handler
+      Description: Reads and deletes analyses. Cannot call Textract or Bedrock.
+      LoggingConfig:
+        LogGroup: !Ref AnalysisLogGroup
+      Environment:
+        Variables:
+          BEDROCK_MODEL_ID: !Ref BedrockModelId
+          BEDROCK_REGION: !If [HasBedrockRegion, !Ref BedrockRegion, !Ref 'AWS::Region']
+      Policies:
+        - Statement:
+            - Effect: Allow
+              Action: s3:DeleteObject
+              Resource: !Sub '${UploadBucket.Arn}/uploads/*'
+            - Effect: Allow
+              Action: s3:ListBucket
+              Resource: !GetAtt UploadBucket.Arn
+              Condition:
+                StringLike:
+                  's3:prefix': 'uploads/*'
+            - Effect: Allow
+              Action: bedrock:InvokeModel
+              Resource:
+                - !Sub 'arn:${AWS::Partition}:bedrock:*::foundation-model/*'
+                - !Sub 'arn:${AWS::Partition}:bedrock:*:${AWS::AccountId}:inference-profile/*'
+            - Effect: Allow
+              Action:
+                - dynamodb:GetItem
+                - dynamodb:UpdateItem
+                - dynamodb:DeleteItem
+              Resource: !GetAtt AnalysisTable.Arn
+      Events:
+        GetAnalysis:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref HttpApi
+            Method: GET
+            Path: /analyses/{analysisId}
+        DeleteAnalysis:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref HttpApi
+            Method: DELETE
+            Path: /analyses/{analysisId}
+
+  HealthLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub '/kagazready/${AWS::StackName}/health'
+      RetentionInDays: !Ref LogRetentionDays
+
+  HealthFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: api/dist/health/
+      Handler: index.handler
+      Description: Liveness only. Has no AWS permissions beyond writing its own logs.
+      MemorySize: 256
+      Timeout: 5
+      LoggingConfig:
+        LogGroup: !Ref HealthLogGroup
+      Events:
+        GetHealth:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref HttpApi
+            Method: GET
+            Path: /health
+
+Outputs:
+  ApiBaseUrl:
+    Description: Base URL for the API. Set this as VITE_API_BASE_URL in the frontend build.
+    Value: !Sub 'https://${HttpApi}.execute-api.${AWS::Region}.${AWS::URLSuffix}/${Stage}'
+  UploadBucketName:
+    Description: Private upload bucket. Never make this public.
+    Value: !Ref UploadBucket
+  AnalysisTableName:
+    Value: !Ref AnalysisTable
+  BedrockModelId:
+    Description: >
+      The Bedrock model ID this deployment will use. Empty means explanations run on reviewed
+      English fallback copy only.
+    Value: !Ref BedrockModelId
