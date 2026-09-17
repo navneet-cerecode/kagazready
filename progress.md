@@ -203,28 +203,27 @@ as passing that has not actually run.
 
 ## Active blockers
 
-1. **Bedrock: account verification has completed; model access is now the gate.** On
-   2026-09-18 the error changed from `AccessDeniedException ... being verified` to
-   `ValidationException: Operation not allowed` for every model tried. `get-foundation-model-
-availability` shows why, precisely:
+1. **Bedrock: blocked by account-level zero quotas on a new AWS account.** Diagnosed 2026-09-18,
+   in order:
 
-   | Model                                     | agreementAvailability | authorizationStatus |
-   | ----------------------------------------- | --------------------- | ------------------- |
-   | anthropic.claude-3-haiku-20240307-v1:0    | NOT_AVAILABLE         | NOT_AUTHORIZED      |
-   | anthropic.claude-haiku-4-5-20251001-v1:0  | NOT_AVAILABLE         | NOT_AUTHORIZED      |
-   | anthropic.claude-3-5-sonnet-20241022-v2:0 | NOT_AVAILABLE         | NOT_AUTHORIZED      |
-   | amazon.nova-lite-v1:0                     | AVAILABLE             | NOT_AUTHORIZED      |
-   | amazon.nova-micro-v1:0                    | AVAILABLE             | NOT_AUTHORIZED      |
+   - `AccessDeniedException: account is being verified` — cleared after ~2 hours.
+   - Then `ValidationException: Operation not allowed` for every model tried, including
+     `apac.amazon.nova-lite-v1:0`.
+   - The Bedrock console's Model access page is retired ("models are automatically enabled when
+     first invoked"), so there is no console switch to flip.
+   - `service-quotas list-service-quotas --service-code bedrock` shows **all 75 "requests per
+     minute" quotas at 0** (AWS default for Nova Lite: 400/min), "model invocation max tokens per
+     day" at 0 (default 5.76 billion), and "cross-region tokens per minute" at 0 (default 400,000).
+     Only the last is adjustable through Service Quotas; the other two require an AWS Support
+     limit-increase case, which AWS may decline for an account this new.
 
-   Anthropic models are not offered to this new account without a use-case submission. Amazon Nova
-   is not on-demand in `ap-south-1` directly, but `list-inference-profiles` exposes
-   `apac.amazon.nova-lite-v1:0` and `apac.amazon.nova-micro-v1:0`, which route within the APAC
-   region set. **Chosen model: `apac.amazon.nova-lite-v1:0`** — cheap, agreement available, better
-   multilingual quality than Micro, and inference stays in APAC.
-
-   Enabling it means accepting a model agreement in the Bedrock console (Model access). That is an
-   account setting and an agreement, so the user does it, not Claude. Until then the stack runs with
-   `BEDROCK_MODEL_ID` empty and the fallback path, which is verified live.
+   The intended model remains `apac.amazon.nova-lite-v1:0` (cheapest with an available agreement;
+   Anthropic agreements are NOT_AVAILABLE to this account). The stack is deployed with
+   `BEDROCK_MODEL_ID` empty. **The fallback path is not a degraded demo: it is verified live** —
+   deterministic findings, reviewed copy in en/hi/gu, reviewed English plain-language notes,
+   `explanationsDegraded: true` reported honestly. Per the brief, "the exact access blocker and
+   fallback are documented" is an accepted outcome. If the quota is raised before submission,
+   redeploy with the model ID and run the en/hi/gu smoke test.
 
 2. **Ponytail plugin is not installed.** The user has the two commands. Until it is present, its
    published principles are applied manually (no unnecessary features, reuse before writing, prefer
