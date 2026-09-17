@@ -19,9 +19,17 @@ Claude Code session.
 - Stack: `kagazready`, region `ap-south-1`
 - Bedrock: intentionally unconfigured (see blocker 1). Everything else is real.
 
-**The synthetic fixtures are generated and the real Textract run passes end to end.** Scenario A
-reaches `needs_review` with exactly the expected two findings, and scenario B reaches
-`no_issues_found`, both through real Amazon Textract. Next code work is the frontend.
+**The application is live at a public URL and the whole demo journey works there.**
+
+- Frontend: `https://main.d109ovvm872kui.amplifyapp.com` (Amplify Hosting, manual zip deployment,
+  security headers from `apps/web/customHttp.yml`)
+- API: `https://qev138fuyk.execute-api.ap-south-1.amazonaws.com/prod`, `AllowedOrigin` now pinned
+  to the Amplify origin.
+- Verified on the public URL on 2026-09-18: sample set → real upload → real Textract → Needs
+  review with masked evidence → corrected bank proof → No issues found → delete.
+
+Remaining: Playwright run (needs a Chromium download), Impeccable critique/audit/polish, animation
+review, security review and threat model, documentation set, Ponytail review.
 
 ## Environment audit (2026-09-17)
 
@@ -258,11 +266,15 @@ least-privilege roles, and five CloudWatch log groups at 7-day retention.
 Created **outside** the stack by `sam deploy --resolve-s3`: the `aws-sam-cli-managed-default`
 stack and its artefact bucket. `sam delete` does not remove these — delete them separately.
 
+Amplify Hosting app `kagazready` (id `d109ovvm872kui`, branch `main`, region ap-south-1), created
+with `aws amplify create-app`. Redeploy with `python scripts/deploy-web.py` after
+`npm run build -w @kagazready/web`.
+
 ## Cleanup required
 
 1. `sam delete --stack-name kagazready --region ap-south-1`
 2. Delete the `aws-sam-cli-managed-default` stack and empty its artefact bucket.
-3. Delete the Amplify app once it exists.
+3. `aws amplify delete-app --app-id d109ovvm872kui --region ap-south-1`
 
 Nothing bills continuously while idle: DynamoDB is on-demand, Lambda and API Gateway are
 per-request, and S3 holds a few kilobytes that expire within a day.

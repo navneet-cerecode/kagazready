@@ -35,6 +35,7 @@ resolve_s3 = true
 # no Bedrock call is made, the deterministic analysis is unaffected, and explanations use reviewed
 # English fallback copy with explanationsDegraded reported as true.
 #
-# AllowedOrigin starts as the local dev server because Amplify Hosting does not exist yet. It must
-# be updated to the deployed frontend origin before the public demo; the API URL does not change.
-parameter_overrides = "Stage=prod BedrockModelId= BedrockRegion= DailyAnalysisCap=150 AllowedOrigin=http://localhost:5173"
+# AllowedOrigin is the deployed Amplify frontend. For local development against the deployed API,
+# deploy a second time with AllowedOrigin=http://localhost:5173, or run the Playwright suite against
+# the public URL instead (E2E_BASE_URL). The API URL does not change between the two.
+parameter_overrides = "Stage=prod BedrockModelId= BedrockRegion= DailyAnalysisCap=150 AllowedOrigin=https://main.d109ovvm872kui.amplifyapp.com"

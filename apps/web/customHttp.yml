@@ -1,0 +1,25 @@
+# Security headers served by Amplify Hosting for every path.
+#
+# Applied to the Amplify app with `aws amplify update-app --custom-headers file://customHttp.yml`
+# (see docs/aws-cleanup.md and docs/architecture.md). Kept in the repository so the headers are
+# reviewable and reproducible rather than console state.
+#
+# The connect-src list is the whole network surface of the page: the API, and the private S3
+# bucket the browser posts uploads to under a presigned policy. Nothing else is reachable.
+customHeaders:
+  - pattern: '**'
+    headers:
+      - key: Strict-Transport-Security
+        value: max-age=31536000; includeSubDomains
+      - key: X-Content-Type-Options
+        value: nosniff
+      - key: X-Frame-Options
+        value: DENY
+      - key: Referrer-Policy
+        value: no-referrer
+      - key: Permissions-Policy
+        value: camera=(), microphone=(), geolocation=(), payment=(), usb=()
+      - key: Cross-Origin-Opener-Policy
+        value: same-origin
+      - key: Content-Security-Policy
+        value: "default-src 'self'; script-src 'self'; style-src 'self'; font-src 'self'; img-src 'self' blob: data:; connect-src 'self' https://qev138fuyk.execute-api.ap-south-1.amazonaws.com https://*.s3.ap-south-1.amazonaws.com; frame-ancestors 'none'; base-uri 'self'; form-action 'self'; object-src 'none'"

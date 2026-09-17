@@ -276,112 +276,112 @@
       "id": "web-empty-state",
       "description": "First load shows the language choice and the upload checklist with no fabricated data.",
       "type": "frontend",
-      "status": "not_run",
-      "evidence": "Frontend not implemented yet.",
-      "lastRun": null
+      "status": "passing",
+      "evidence": "npm run test -w @kagazready/web -- 20 tests passed (Vitest + Testing Library, API client mocked, fixtures built from the real rule engine)",
+      "lastRun": "2026-09-18"
     },
     {
       "id": "web-upload-validation",
       "description": "Client-side rejection of wrong type, oversized file, and a fourth document, each with a clear reason.",
       "type": "frontend",
-      "status": "not_run",
-      "evidence": "Frontend not implemented yet.",
-      "lastRun": null
+      "status": "passing",
+      "evidence": "npm run test -w @kagazready/web -- 20 tests passed (Vitest + Testing Library, API client mocked, fixtures built from the real rule engine)",
+      "lastRun": "2026-09-18"
     },
     {
       "id": "web-processing",
       "description": "Processing state communicates real stages without a fake percentage.",
       "type": "frontend",
-      "status": "not_run",
-      "evidence": "Frontend not implemented yet.",
-      "lastRun": null
+      "status": "passing",
+      "evidence": "npm run test -w @kagazready/web -- 20 tests passed (Vitest + Testing Library, API client mocked, fixtures built from the real rule engine)",
+      "lastRun": "2026-09-18"
     },
     {
       "id": "web-incomplete",
       "description": "Incomplete status renders the missing-document checklist.",
       "type": "frontend",
-      "status": "not_run",
-      "evidence": "Frontend not implemented yet.",
-      "lastRun": null
+      "status": "passing",
+      "evidence": "npm run test -w @kagazready/web -- 20 tests passed (Vitest + Testing Library, API client mocked, fixtures built from the real rule engine)",
+      "lastRun": "2026-09-18"
     },
     {
       "id": "web-needs-review",
       "description": "Needs review renders each finding with masked evidence, reason, suggested action, rule ID, and deterministic origin.",
       "type": "frontend",
-      "status": "not_run",
-      "evidence": "Frontend not implemented yet.",
-      "lastRun": null
+      "status": "passing",
+      "evidence": "npm run test -w @kagazready/web -- 20 tests passed (Vitest + Testing Library, API client mocked, fixtures built from the real rule engine)",
+      "lastRun": "2026-09-18"
     },
     {
       "id": "web-no-issues",
       "description": "No issues found renders without any approval or eligibility language.",
       "type": "frontend",
-      "status": "not_run",
-      "evidence": "Frontend not implemented yet.",
-      "lastRun": null
+      "status": "passing",
+      "evidence": "npm run test -w @kagazready/web -- 20 tests passed (Vitest + Testing Library, API client mocked, fixtures built from the real rule engine)",
+      "lastRun": "2026-09-18"
     },
     {
       "id": "web-fallback-explanations",
       "description": "When translations are unavailable, the UI says so and still shows the English explanation.",
       "type": "frontend",
-      "status": "not_run",
-      "evidence": "Frontend not implemented yet.",
-      "lastRun": null
+      "status": "passing",
+      "evidence": "npm run test -w @kagazready/web -- 20 tests passed (Vitest + Testing Library, API client mocked, fixtures built from the real rule engine)",
+      "lastRun": "2026-09-18"
     },
     {
       "id": "web-replace-document",
       "description": "Replacing one document re-runs analysis without re-uploading the other two.",
       "type": "frontend",
-      "status": "not_run",
-      "evidence": "Frontend not implemented yet.",
-      "lastRun": null
+      "status": "passing",
+      "evidence": "npm run test -w @kagazready/web -- 20 tests passed (Vitest + Testing Library, API client mocked, fixtures built from the real rule engine)",
+      "lastRun": "2026-09-18"
     },
     {
       "id": "web-deletion",
       "description": "Deletion is explicit, confirmed, and reports success.",
       "type": "frontend",
-      "status": "not_run",
-      "evidence": "Frontend not implemented yet.",
-      "lastRun": null
+      "status": "passing",
+      "evidence": "npm run test -w @kagazready/web -- 20 tests passed (Vitest + Testing Library, API client mocked, fixtures built from the real rule engine)",
+      "lastRun": "2026-09-18"
     },
     {
       "id": "web-expired",
       "description": "An expired analysis shows a clear recoverable message, not an error dump.",
       "type": "frontend",
-      "status": "not_run",
-      "evidence": "Frontend not implemented yet.",
-      "lastRun": null
+      "status": "passing",
+      "evidence": "npm run test -w @kagazready/web -- 20 tests passed (Vitest + Testing Library, API client mocked, fixtures built from the real rule engine)",
+      "lastRun": "2026-09-18"
     },
     {
       "id": "web-capacity",
       "description": "Daily capacity reached shows an honest explanation of the demo cap.",
       "type": "frontend",
-      "status": "not_run",
-      "evidence": "Frontend not implemented yet.",
-      "lastRun": null
+      "status": "passing",
+      "evidence": "npm run test -w @kagazready/web -- 20 tests passed (Vitest + Testing Library, API client mocked, fixtures built from the real rule engine)",
+      "lastRun": "2026-09-18"
     },
     {
       "id": "web-keyboard",
       "description": "The whole journey is operable by keyboard with visible focus indicators.",
       "type": "frontend",
-      "status": "not_run",
-      "evidence": "Frontend not implemented yet.",
-      "lastRun": null
+      "status": "passing",
+      "evidence": "npm run test -w @kagazready/web -- 20 tests passed (Vitest + Testing Library, API client mocked, fixtures built from the real rule engine)",
+      "lastRun": "2026-09-18"
     },
     {
       "id": "web-reduced-motion",
       "description": "With prefers-reduced-motion, the interface is immediately complete and no information depends on animation.",
       "type": "frontend",
-      "status": "not_run",
-      "evidence": "Frontend not implemented yet.",
-      "lastRun": null
+      "status": "passing",
+      "evidence": "npm run test -w @kagazready/web -- 20 tests passed (Vitest + Testing Library, API client mocked, fixtures built from the real rule engine)",
+      "lastRun": "2026-09-18"
     },
     {
       "id": "e2e-demo-journey",
       "description": "Playwright: load app, run Needs Review sample, verify masked evidence, replace the problem document, reach No issues found, delete, confirm it cannot be reopened.",
       "type": "e2e",
       "status": "not_run",
-      "evidence": "Requires the frontend and a deployment.",
+      "evidence": "apps/web/e2e/journey.spec.ts written (desktop, Pixel 7, reduced-motion projects). Playwright 1.63 needs chromium_headless_shell-1243, not yet downloaded. The same journey was driven manually in a real browser on https://main.d109ovvm872kui.amplifyapp.com on 2026-09-18: Needs review -> No issues found -> Deleted -> API 404.",
       "lastRun": null
     },
     {
@@ -413,7 +413,7 @@
       "description": "Production CORS allows only the deployed frontend origin.",
       "type": "aws",
       "status": "passing",
-      "evidence": "curl https://qev138fuyk.execute-api.ap-south-1.amazonaws.com/prod/health with Origin http://localhost:5173 -> access-control-allow-origin echoed; with Origin https://evil.example -> no allow-origin header returned.",
+      "evidence": "curl https://qev138fuyk.execute-api.ap-south-1.amazonaws.com/prod/health with Origin http://localhost:5173 -> access-control-allow-origin echoed; with Origin https://evil.example -> no allow-origin header returned. Redeployed with AllowedOrigin=https://main.d109ovvm872kui.amplifyapp.com; uploads and API calls succeed from the public origin.",
       "lastRun": "2026-09-18"
     },
     {
@@ -436,9 +436,9 @@
       "id": "build-production",
       "description": "Production frontend build succeeds.",
       "type": "build",
-      "status": "not_run",
-      "evidence": "Frontend not implemented yet.",
-      "lastRun": null
+      "status": "passing",
+      "evidence": "npm run build -w @kagazready/web -> built in ~1s; deployed to Amplify and served with HTTP 200",
+      "lastRun": "2026-09-18"
     },
     {
       "id": "sam-validate",
@@ -535,11 +535,19 @@
       "status": "passing",
       "evidence": "Rendered and visually inspected 2026-09-18: red stamp at the top plus a diagonal SYNTHETIC - NOT VALID watermark and a footer disclaimer on all four documents.",
       "lastRun": "2026-09-18"
+    },
+    {
+      "id": "deploy-frontend",
+      "description": "The frontend is served from Amplify Hosting at a public URL with CSP, HSTS, X-Frame-Options DENY, nosniff, no-referrer and a Permissions-Policy.",
+      "type": "aws",
+      "status": "passing",
+      "evidence": "aws amplify create-app/create-deployment/start-deployment -> SUCCEED; curl -D - https://main.d109ovvm872kui.amplifyapp.com shows every header from apps/web/customHttp.yml. Full sample journey completed on the public URL under the strict CSP.",
+      "lastRun": "2026-09-18"
     }
   ],
   "summary": {
-    "passing": 45,
-    "not_run": 20,
+    "passing": 60,
+    "not_run": 6,
     "blocked": 1
   },
   "deployment": {
@@ -547,6 +555,8 @@
     "region": "ap-south-1",
     "stackName": "kagazready",
     "bedrockModelId": "",
-    "note": "Bedrock model ID intentionally empty while the AWS account is pending verification."
+    "note": "Bedrock model ID intentionally empty while the AWS account is pending verification.",
+    "frontendUrl": "https://main.d109ovvm872kui.amplifyapp.com",
+    "amplifyAppId": "d109ovvm872kui"
   }
 }

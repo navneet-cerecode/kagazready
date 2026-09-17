@@ -6,3 +6,6 @@ fixtures/out
 playwright-report
 test-results
 package-lock.json
+playwright-report
+test-results
+apps/web/public/samples
