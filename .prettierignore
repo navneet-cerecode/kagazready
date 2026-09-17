@@ -1,0 +1,8 @@
+node_modules
+dist
+.aws-sam
+coverage
+fixtures/out
+playwright-report
+test-results
+package-lock.json

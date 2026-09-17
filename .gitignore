@@ -1,0 +1,53 @@
+# dependencies
+node_modules/
+
+# build output
+dist/
+build/
+*.tsbuildinfo
+.aws-sam/
+
+# environment / secrets
+.env
+.env.*
+!.env.example
+
+# machine-local Claude Code state
+.claude/settings.local.json
+.claude/*.local.json
+
+# third-party dev-tool installs (reproduce with the commands in ATTRIBUTIONS.md):
+#   npx impeccable install --providers=claude --scope=project
+#   npx skills@latest add emilkowalski/skills
+# Excluded because they are absolute symlinks plus a 17 MB platform binary,
+# not project source.
+.claude/skills/
+.claude/agents/
+.agents/
+
+# third-party dev-tool caches and generated previews
+.impeccable/
+.impeccable-cache/
+**/impeccable-screenshots/
+.skills-cache/
+
+# test + tooling artifacts
+coverage/
+playwright-report/
+test-results/
+blob-report/
+.playwright/
+
+# generated synthetic fixtures (regenerate with: npm run fixtures)
+fixtures/out/
+
+# editor / OS
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# never commit real documents or personal data
+private/
+samples-real/
+skills-lock.json
