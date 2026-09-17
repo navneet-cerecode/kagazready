@@ -1,0 +1,505 @@
+{
+  "project": "KagazReady",
+  "updated": "2026-09-17",
+  "statusLegend": {
+    "not_run": "Never executed. Do not claim it passes.",
+    "passing": "Ran successfully; evidence recorded.",
+    "failing": "Ran and failed; evidence recorded.",
+    "blocked": "Cannot run yet; blocker named in evidence."
+  },
+  "checks": [
+    {
+      "id": "rules-name-exact",
+      "description": "Identical normalized names across three documents produce no name finding.",
+      "type": "unit",
+      "status": "passing",
+      "evidence": "npm run test -w @kagazready/rules -- 130 tests passed (8 files)",
+      "lastRun": "2026-09-17"
+    },
+    {
+      "id": "rules-name-unicode",
+      "description": "Devanagari and Gujarati names normalize without corruption; NFC/NFD forms of the same name compare equal.",
+      "type": "unit",
+      "status": "passing",
+      "evidence": "npm run test -w @kagazready/rules -- 130 tests passed (8 files)",
+      "lastRun": "2026-09-17"
+    },
+    {
+      "id": "rules-name-reordered",
+      "description": "Same tokens in a different order are treated as a match, not a material difference.",
+      "type": "unit",
+      "status": "passing",
+      "evidence": "npm run test -w @kagazready/rules -- 130 tests passed (8 files)",
+      "lastRun": "2026-09-17"
+    },
+    {
+      "id": "rules-name-minor",
+      "description": "A single-character or initial-vs-full-name difference yields needs_review, not a material correction.",
+      "type": "unit",
+      "status": "passing",
+      "evidence": "npm run test -w @kagazready/rules -- 130 tests passed (8 files)",
+      "lastRun": "2026-09-17"
+    },
+    {
+      "id": "rules-name-material",
+      "description": "A different surname or an extra/missing name token yields a material difference finding.",
+      "type": "unit",
+      "status": "passing",
+      "evidence": "npm run test -w @kagazready/rules -- 130 tests passed (8 files)",
+      "lastRun": "2026-09-17"
+    },
+    {
+      "id": "rules-name-titles",
+      "description": "Common title prefixes (Shri, Smt, Mr, Ms, Kum) are stripped safely and do not create findings.",
+      "type": "unit",
+      "status": "passing",
+      "evidence": "npm run test -w @kagazready/rules -- 130 tests passed (8 files)",
+      "lastRun": "2026-09-17"
+    },
+    {
+      "id": "rules-account-masking",
+      "description": "Bank account numbers are masked in findings, evidence, logs, and Bedrock prompts; no full number ever appears in output.",
+      "type": "unit",
+      "status": "passing",
+      "evidence": "npm run test -w @kagazready/rules -- 130 tests passed (8 files)",
+      "lastRun": "2026-09-17"
+    },
+    {
+      "id": "rules-account-missing",
+      "description": "Missing bank account number produces a required-field finding.",
+      "type": "unit",
+      "status": "passing",
+      "evidence": "npm run test -w @kagazready/rules -- 130 tests passed (8 files)",
+      "lastRun": "2026-09-17"
+    },
+    {
+      "id": "rules-ifsc-format",
+      "description": "IFSC structural validation accepts valid codes and flags structurally invalid ones.",
+      "type": "unit",
+      "status": "passing",
+      "evidence": "npm run test -w @kagazready/rules -- 130 tests passed (8 files)",
+      "lastRun": "2026-09-17"
+    },
+    {
+      "id": "rules-ocr-confidence",
+      "description": "Field values extracted below the configured OCR confidence threshold produce an unclear-field finding with the confidence reported.",
+      "type": "unit",
+      "status": "passing",
+      "evidence": "npm run test -w @kagazready/rules -- 130 tests passed (8 files)",
+      "lastRun": "2026-09-17"
+    },
+    {
+      "id": "rules-required-documents",
+      "description": "A missing required document type yields overall status incomplete.",
+      "type": "unit",
+      "status": "passing",
+      "evidence": "npm run test -w @kagazready/rules -- 130 tests passed (8 files)",
+      "lastRun": "2026-09-17"
+    },
+    {
+      "id": "rules-required-fields",
+      "description": "Each expected field absent from a present document produces a required-field finding.",
+      "type": "unit",
+      "status": "passing",
+      "evidence": "npm run test -w @kagazready/rules -- 130 tests passed (8 files)",
+      "lastRun": "2026-09-17"
+    },
+    {
+      "id": "rules-date-indian-format",
+      "description": "DD/MM/YYYY and DD-MM-YYYY dates parse correctly.",
+      "type": "unit",
+      "status": "passing",
+      "evidence": "npm run test -w @kagazready/rules -- 130 tests passed (8 files)",
+      "lastRun": "2026-09-17"
+    },
+    {
+      "id": "rules-date-ambiguous",
+      "description": "A date that is valid as both DD/MM and MM/DD is flagged ambiguous rather than silently assumed.",
+      "type": "unit",
+      "status": "passing",
+      "evidence": "npm run test -w @kagazready/rules -- 130 tests passed (8 files)",
+      "lastRun": "2026-09-17"
+    },
+    {
+      "id": "rules-date-future",
+      "description": "A future issue date is detected and flagged.",
+      "type": "unit",
+      "status": "passing",
+      "evidence": "npm run test -w @kagazready/rules -- 130 tests passed (8 files)",
+      "lastRun": "2026-09-17"
+    },
+    {
+      "id": "rules-date-unparseable",
+      "description": "An unparseable date produces a finding instead of throwing.",
+      "type": "unit",
+      "status": "passing",
+      "evidence": "npm run test -w @kagazready/rules -- 130 tests passed (8 files)",
+      "lastRun": "2026-09-17"
+    },
+    {
+      "id": "rules-status-precedence",
+      "description": "Overall status is the most severe of the findings: incomplete > needs_review > no_issues_found.",
+      "type": "unit",
+      "status": "passing",
+      "evidence": "npm run test -w @kagazready/rules -- 130 tests passed (8 files)",
+      "lastRun": "2026-09-17"
+    },
+    {
+      "id": "rules-no-forbidden-words",
+      "description": "No rule output contains Approved, Eligible, Verified, Guaranteed, or Rejected.",
+      "type": "unit",
+      "status": "passing",
+      "evidence": "npm run test -w @kagazready/rules -- 130 tests passed (8 files)",
+      "lastRun": "2026-09-17"
+    },
+    {
+      "id": "rules-purity",
+      "description": "packages/rules imports no AWS SDK and performs no I/O.",
+      "type": "unit",
+      "status": "passing",
+      "evidence": "npm run test -w @kagazready/rules -- 130 tests passed (8 files)",
+      "lastRun": "2026-09-17"
+    },
+    {
+      "id": "api-presign-constraints",
+      "description": "POST /uploads returns a presigned POST with randomized key, restricted prefix, short expiry, content-type condition, and content-length range.",
+      "type": "backend",
+      "status": "passing",
+      "evidence": "npm run test -w @kagazready/api -- 46 tests passed (1 file)",
+      "lastRun": "2026-09-17"
+    },
+    {
+      "id": "api-reject-mime",
+      "description": "An unsupported content type is rejected with 415 before any presign is issued.",
+      "type": "backend",
+      "status": "passing",
+      "evidence": "npm run test -w @kagazready/api -- 46 tests passed (1 file)",
+      "lastRun": "2026-09-17"
+    },
+    {
+      "id": "api-reject-oversize",
+      "description": "A declared size above 5 MB is rejected with 413.",
+      "type": "backend",
+      "status": "passing",
+      "evidence": "npm run test -w @kagazready/api -- 46 tests passed (1 file)",
+      "lastRun": "2026-09-17"
+    },
+    {
+      "id": "api-reject-bad-key",
+      "description": "An object key outside the analysis prefix is rejected and never sent to Textract.",
+      "type": "backend",
+      "status": "passing",
+      "evidence": "npm run test -w @kagazready/api -- 46 tests passed (1 file)",
+      "lastRun": "2026-09-17"
+    },
+    {
+      "id": "api-missing-object",
+      "description": "A referenced S3 object that does not exist produces a safe 400/409, not a 500.",
+      "type": "backend",
+      "status": "passing",
+      "evidence": "npm run test -w @kagazready/api -- 46 tests passed (1 file)",
+      "lastRun": "2026-09-17"
+    },
+    {
+      "id": "api-textract-failure",
+      "description": "A Textract error produces a safe error response with a correlation ID and no internal detail.",
+      "type": "backend",
+      "status": "passing",
+      "evidence": "npm run test -w @kagazready/api -- 46 tests passed (1 file)",
+      "lastRun": "2026-09-17"
+    },
+    {
+      "id": "api-bedrock-failure",
+      "description": "A Bedrock failure preserves the deterministic findings and falls back to predefined English explanations.",
+      "type": "backend",
+      "status": "passing",
+      "evidence": "npm run test -w @kagazready/api -- 46 tests passed (1 file)",
+      "lastRun": "2026-09-17"
+    },
+    {
+      "id": "api-bedrock-invalid-json",
+      "description": "Bedrock output failing schema validation is discarded; deterministic results and fallback explanations are returned.",
+      "type": "backend",
+      "status": "passing",
+      "evidence": "npm run test -w @kagazready/api -- 46 tests passed (1 file)",
+      "lastRun": "2026-09-17"
+    },
+    {
+      "id": "api-expired-analysis",
+      "description": "GET on an expired or unknown analysis ID returns 404 with a safe message.",
+      "type": "backend",
+      "status": "passing",
+      "evidence": "npm run test -w @kagazready/api -- 46 tests passed (1 file)",
+      "lastRun": "2026-09-17"
+    },
+    {
+      "id": "api-delete",
+      "description": "DELETE removes the DynamoDB item and every S3 object under the analysis prefix; a subsequent GET returns 404.",
+      "type": "backend",
+      "status": "passing",
+      "evidence": "npm run test -w @kagazready/api -- 46 tests passed (1 file)",
+      "lastRun": "2026-09-17"
+    },
+    {
+      "id": "api-idempotent-repeat",
+      "description": "A repeated analysis creation with the same idempotency key does not double-charge Textract.",
+      "type": "backend",
+      "status": "passing",
+      "evidence": "npm run test -w @kagazready/api -- 46 tests passed (1 file)",
+      "lastRun": "2026-09-17"
+    },
+    {
+      "id": "api-daily-cap",
+      "description": "Once the daily analysis cap is reached, new analyses are refused with a clear capacity message and no AWS spend.",
+      "type": "backend",
+      "status": "passing",
+      "evidence": "npm run test -w @kagazready/api -- 46 tests passed (1 file)",
+      "lastRun": "2026-09-17"
+    },
+    {
+      "id": "api-safe-errors",
+      "description": "No error response exposes stack traces, account IDs, bucket names, or credentials.",
+      "type": "backend",
+      "status": "passing",
+      "evidence": "npm run test -w @kagazready/api -- 46 tests passed (1 file)",
+      "lastRun": "2026-09-17"
+    },
+    {
+      "id": "api-health",
+      "description": "GET /health returns service liveness without credentials, account IDs, stack traces, or unnecessary resource names.",
+      "type": "backend",
+      "status": "passing",
+      "evidence": "npm run test -w @kagazready/api -- 46 tests passed (1 file)",
+      "lastRun": "2026-09-17"
+    },
+    {
+      "id": "web-empty-state",
+      "description": "First load shows the language choice and the upload checklist with no fabricated data.",
+      "type": "frontend",
+      "status": "not_run",
+      "evidence": "Frontend not implemented yet.",
+      "lastRun": null
+    },
+    {
+      "id": "web-upload-validation",
+      "description": "Client-side rejection of wrong type, oversized file, and a fourth document, each with a clear reason.",
+      "type": "frontend",
+      "status": "not_run",
+      "evidence": "Frontend not implemented yet.",
+      "lastRun": null
+    },
+    {
+      "id": "web-processing",
+      "description": "Processing state communicates real stages without a fake percentage.",
+      "type": "frontend",
+      "status": "not_run",
+      "evidence": "Frontend not implemented yet.",
+      "lastRun": null
+    },
+    {
+      "id": "web-incomplete",
+      "description": "Incomplete status renders the missing-document checklist.",
+      "type": "frontend",
+      "status": "not_run",
+      "evidence": "Frontend not implemented yet.",
+      "lastRun": null
+    },
+    {
+      "id": "web-needs-review",
+      "description": "Needs review renders each finding with masked evidence, reason, suggested action, rule ID, and deterministic origin.",
+      "type": "frontend",
+      "status": "not_run",
+      "evidence": "Frontend not implemented yet.",
+      "lastRun": null
+    },
+    {
+      "id": "web-no-issues",
+      "description": "No issues found renders without any approval or eligibility language.",
+      "type": "frontend",
+      "status": "not_run",
+      "evidence": "Frontend not implemented yet.",
+      "lastRun": null
+    },
+    {
+      "id": "web-fallback-explanations",
+      "description": "When translations are unavailable, the UI says so and still shows the English explanation.",
+      "type": "frontend",
+      "status": "not_run",
+      "evidence": "Frontend not implemented yet.",
+      "lastRun": null
+    },
+    {
+      "id": "web-replace-document",
+      "description": "Replacing one document re-runs analysis without re-uploading the other two.",
+      "type": "frontend",
+      "status": "not_run",
+      "evidence": "Frontend not implemented yet.",
+      "lastRun": null
+    },
+    {
+      "id": "web-deletion",
+      "description": "Deletion is explicit, confirmed, and reports success.",
+      "type": "frontend",
+      "status": "not_run",
+      "evidence": "Frontend not implemented yet.",
+      "lastRun": null
+    },
+    {
+      "id": "web-expired",
+      "description": "An expired analysis shows a clear recoverable message, not an error dump.",
+      "type": "frontend",
+      "status": "not_run",
+      "evidence": "Frontend not implemented yet.",
+      "lastRun": null
+    },
+    {
+      "id": "web-capacity",
+      "description": "Daily capacity reached shows an honest explanation of the demo cap.",
+      "type": "frontend",
+      "status": "not_run",
+      "evidence": "Frontend not implemented yet.",
+      "lastRun": null
+    },
+    {
+      "id": "web-keyboard",
+      "description": "The whole journey is operable by keyboard with visible focus indicators.",
+      "type": "frontend",
+      "status": "not_run",
+      "evidence": "Frontend not implemented yet.",
+      "lastRun": null
+    },
+    {
+      "id": "web-reduced-motion",
+      "description": "With prefers-reduced-motion, the interface is immediately complete and no information depends on animation.",
+      "type": "frontend",
+      "status": "not_run",
+      "evidence": "Frontend not implemented yet.",
+      "lastRun": null
+    },
+    {
+      "id": "e2e-demo-journey",
+      "description": "Playwright: load app, run Needs Review sample, verify masked evidence, replace the problem document, reach No issues found, delete, confirm it cannot be reopened.",
+      "type": "e2e",
+      "status": "not_run",
+      "evidence": "Requires the frontend and a deployment.",
+      "lastRun": null
+    },
+    {
+      "id": "aws-textract-smoke",
+      "description": "Real Textract DetectDocumentText processes the synthetic fixtures and returns the expected fields and confidences.",
+      "type": "aws",
+      "status": "blocked",
+      "evidence": "No AWS CLI and no credentials configured yet.",
+      "lastRun": null
+    },
+    {
+      "id": "aws-bedrock-smoke",
+      "description": "Real Bedrock returns schema-valid explanations in en/hi/gu, or the exact access blocker is documented.",
+      "type": "aws",
+      "status": "blocked",
+      "evidence": "No AWS CLI and no credentials configured yet.",
+      "lastRun": null
+    },
+    {
+      "id": "aws-s3-private",
+      "description": "The upload bucket denies anonymous access and Block Public Access is on for all four settings.",
+      "type": "aws",
+      "status": "blocked",
+      "evidence": "No AWS CLI and no credentials configured yet.",
+      "lastRun": null
+    },
+    {
+      "id": "aws-cors",
+      "description": "Production CORS allows only the deployed frontend origin.",
+      "type": "aws",
+      "status": "blocked",
+      "evidence": "No AWS CLI and no credentials configured yet.",
+      "lastRun": null
+    },
+    {
+      "id": "aws-retention",
+      "description": "S3 lifecycle deletes within 1 day, DynamoDB TTL is enabled with a sub-24-hour expiry, CloudWatch retention is short.",
+      "type": "aws",
+      "status": "blocked",
+      "evidence": "No AWS CLI and no credentials configured yet.",
+      "lastRun": null
+    },
+    {
+      "id": "build-lambda-bundles",
+      "description": "Each Lambda handler bundles with esbuild and the bundle loads and exports a handler function.",
+      "type": "build",
+      "status": "passing",
+      "evidence": "npm run build -w @kagazready/api -> uploads 657 kB, analyses 972 kB, analysis 920 kB, health 71 kB, all 'handler OK' (assertion is inside build.mjs)",
+      "lastRun": "2026-09-17"
+    },
+    {
+      "id": "build-production",
+      "description": "Production frontend build succeeds.",
+      "type": "build",
+      "status": "not_run",
+      "evidence": "Frontend not implemented yet.",
+      "lastRun": null
+    },
+    {
+      "id": "sam-validate",
+      "description": "sam validate --lint passes on the template, and sam build produces all four function artefacts.",
+      "type": "build",
+      "status": "passing",
+      "evidence": "sam validate --lint --template services/template.yaml -> \"is a valid SAM Template\"; sam build -> Build Succeeded, 4 artefacts (SAM CLI 1.166.2)",
+      "lastRun": "2026-09-17"
+    },
+    {
+      "id": "quality-format-lint-typecheck",
+      "description": "Prettier check, ESLint, and tsc --noEmit all pass across workspaces.",
+      "type": "build",
+      "status": "passing",
+      "evidence": "npx prettier --check . / npx eslint . / npm run typecheck -- all clean, 0 errors",
+      "lastRun": "2026-09-17"
+    },
+    {
+      "id": "review-security",
+      "description": "Repository-grounded security review completed and practical high-priority findings fixed.",
+      "type": "review",
+      "status": "not_run",
+      "evidence": "Scheduled for phases 9 and 11.",
+      "lastRun": null
+    },
+    {
+      "id": "review-threat-model",
+      "description": "docs/threat-model.md written from the real implementation with mitigations verified.",
+      "type": "review",
+      "status": "not_run",
+      "evidence": "Scheduled for phases 9 and 11.",
+      "lastRun": null
+    },
+    {
+      "id": "review-impeccable-audit",
+      "description": "Impeccable audit run and findings addressed.",
+      "type": "review",
+      "status": "not_run",
+      "evidence": "Scheduled for phases 9 and 11.",
+      "lastRun": null
+    },
+    {
+      "id": "review-ponytail",
+      "description": "Ponytail review run and avoidable complexity removed.",
+      "type": "review",
+      "status": "not_run",
+      "evidence": "Scheduled for phases 9 and 11.",
+      "lastRun": null
+    },
+    {
+      "id": "review-animations",
+      "description": "Animation review run; motion is purposeful, causes no layout shift, and is verified on a mid-range mobile viewport.",
+      "type": "review",
+      "status": "not_run",
+      "evidence": "Scheduled for phases 9 and 11.",
+      "lastRun": null
+    }
+  ],
+  "summary": {
+    "passing": 36,
+    "not_run": 20,
+    "blocked": 5
+  }
+}

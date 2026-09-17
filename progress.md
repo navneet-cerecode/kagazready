@@ -1,0 +1,197 @@
+# progress.md — KagazReady
+
+Living state file. Update at every milestone so work can resume after context compaction or in a new
+Claude Code session.
+
+## Authorization record
+
+- **2026-09-17** — Read-only audit completed and reported. No files created.
+- **2026-09-17** — Clock authorization given by the user in chat, verbatim: _"the round is now live
+  we can start building"_. Implementation authorized from this point. Separate approval is still
+  required before creating or pushing a public GitHub repository, exceeding the AWS budget,
+  force-pushing, or deleting unfamiliar infrastructure.
+
+## Current milestone
+
+**Phase 4 infrastructure builds and validates locally; deployment blocked on credentials only.**
+The backend is implemented and tested against mocked AWS clients, the SAM template validates and
+lints, and all four Lambda bundles build and load. Next code work is the fixtures generator and the
+frontend.
+
+## Environment audit (2026-09-17)
+
+| Item          | State                                                                                |
+| ------------- | ------------------------------------------------------------------------------------ |
+| Node          | v24.12.0                                                                             |
+| npm           | 11.6.2                                                                               |
+| Git           | 2.47.1.windows.1                                                                     |
+| GitHub CLI    | 2.97.0, authenticated as `navneet-cerecode` (scopes: repo, workflow, gist, read:org) |
+| Docker        | present (optional, for `sam local`)                                                  |
+| Python        | 3.14.0                                                                               |
+| AWS CLI       | **not installed** — blocker for Phase 4                                              |
+| AWS SAM CLI   | **not installed** — blocker for Phase 4                                              |
+| AWS creds     | **absent** — no `~/.aws`, no `AWS_*` env vars                                        |
+| Ponytail      | **not installed** — no marketplaces registered                                       |
+| Impeccable    | not installed                                                                        |
+| Emil skills   | not installed                                                                        |
+| Repo at start | directory completely empty, not a git repository, no remote                          |
+
+No pre-existing or uncommitted user work existed in this directory. Nothing was overwritten.
+
+## Completed work
+
+- `git init -b main`, workspace directory structure created.
+- `.gitignore` excluding `.env`, `.claude/settings.local.json`, Impeccable caches, generated
+  fixtures, and any `private/` or `samples-real/` path.
+- Root `package.json` (npm workspaces), `tsconfig.base.json`, Prettier config.
+- `CLAUDE.md` — product purpose, architecture, the Bedrock-cannot-determine-status boundary, coding
+  conventions, commands, region, security boundaries, cost limits, testing requirements.
+- `progress.md`, `tests.json` seeded.
+- Impeccable v4.1.0 installed project-locally (`.claude/skills/impeccable`, agents, and a hook in
+  `.claude/settings.local.json`, which is gitignored). Emil Kowalski's skills installed into
+  `.agents/skills` with symlinks in `.claude/skills`. Both are gitignored: they are absolute
+  symlinks plus a 17 MB platform binary, and the install commands are recorded in
+  `ATTRIBUTIONS.md`. **Ponytail is still missing** and must be installed by the user.
+- `LICENSE` (MIT), `ATTRIBUTIONS.md`, `eslint.config.js`, Prettier config.
+
+### Phase 3 — the whole backend, implemented and tested
+
+- `packages/contracts` — zod schemas for the HTTP contract, the domain types, the Bedrock output
+  schema (which rejects decision words outright), and the versioned scholarship template.
+- `packages/rules` — the deterministic engine. Unicode-aware normalization, name comparison
+  (match / minor / material), account masking, IFSC structure, Indian date parsing with ambiguity
+  and future-date detection, OCR confidence thresholds, label-based field extraction from Textract
+  lines, and reviewed copy in English, Hindi and Gujarati. Pure: a test asserts it imports no AWS
+  SDK, reads no clock, and never logs.
+- `services/api` — four Lambda handlers (`uploads`, `analyses` write, `analysis` read/delete,
+  `health`) plus thin adapters for S3, Textract, DynamoDB and Bedrock, a daily cap enforced by a
+  conditional DynamoDB counter, correlation IDs, and safe errors.
+- `services/template.yaml` — SAM stack: private S3 with Block Public Access, SSE, a one-day
+  lifecycle rule and a TLS-only bucket policy; DynamoDB with TTL; HTTP API with throttling and
+  restrictive CORS; four functions with separate least-privilege roles; seven-day log retention.
+
+### The Lambda build: three problems found and fixed while getting `sam build` to pass
+
+1. SAM's default builder copies `CodeUri` to a scratch directory and runs `npm install` there, which
+   404s on `@kagazready/contracts` — workspace symlinks are not published packages.
+   `build_in_source = true` in `services/samconfig.toml` fixes the resolution.
+2. SAM's esbuild builder then could not find esbuild, because npm workspaces hoist it to the root
+   `node_modules/.bin` and the builder only looks inside the function's own. Putting it on PATH did
+   not help. Resolved by bundling explicitly in `services/api/build.mjs` and letting SAM only zip
+   the output — which also makes the Lambda build reproducible without SAM.
+3. The bundles built but did not load: `services/api` is `"type": "module"`, so Node parsed the
+   CommonJS output as ESM and the handler export vanished. Each `dist/<name>/package.json` now sets
+   `"type": "commonjs"`, and `build.mjs` loads every bundle and asserts the handler export, so a
+   bundle that builds but cannot run fails the build instead of failing in Lambda.
+
+### Design decisions worth remembering
+
+- **Localization does not depend on Bedrock.** Titles, reasons and suggested actions are static
+  reviewed copy in all three languages. Bedrock only adds one optional plain-language sentence per
+  finding. A Bedrock outage costs that sentence and nothing else.
+- **One finding per disagreeing group, not per pair of documents.** Names are clustered by "same
+  name written differently"; the largest cluster is the reference. One wrong document therefore
+  produces one clear finding rather than two overlapping ones.
+- **An unclear field is not also compared.** A name Textract read below its confidence threshold is
+  excluded from cross-document comparison, because claiming a mismatch on characters nobody could
+  read would invent a second problem.
+- **Replacement re-reads all three documents.** Caching OCR text would save two Textract pages but
+  would mean storing the unmasked account number in DynamoDB. Two pages cost a fraction of a cent.
+- **ZWNJ and ZWJ are not whitespace.** They control conjunct formation in Devanagari and Gujarati,
+  so stripping them would silently rewrite a name. The linter caught this one.
+
+## Verified behavior
+
+Commands run on 2026-09-17, all from the repository root:
+
+| Command                  | Result                                   |
+| ------------------------ | ---------------------------------------- |
+| `npm run test`           | 176 passed (130 rules, 46 API), 0 failed |
+| `npm run typecheck`      | 0 errors across all three workspaces     |
+| `npx eslint .`           | 0 errors                                 |
+| `npx prettier --check .` | all files match                          |
+
+Verified by those tests, against mocked AWS clients:
+
+- Scenario A produces exactly two findings — the material name difference on the bank proof and the
+  unclear account number — and reaches `needs_review`.
+- Replacing the bank proof reaches `no_issues_found` with no findings.
+- The account number never appears unmasked in any response, reading, finding, or rendered text.
+- Textract is not called when a key sits outside the analysis prefix, when an object is missing,
+  when it is too large or the wrong type, when more than three documents are sent, or when the
+  daily cap is reached.
+- A repeated analysis request with the same ID does not call Textract again.
+- Bedrock failure, non-JSON output, schema-invalid output, output containing a decision word, and
+  output naming a finding that was never sent all leave the deterministic result intact and fall
+  back to reviewed English copy.
+- Deletion removes the uploads and the stored result, only under its own prefix, and the analysis
+  returns 404 afterwards.
+- No error response contains a bucket name, a table name, a region, an ARN, or a stack trace.
+
+`tests.json` records 34 passing, 6 blocked on AWS tooling, and 20 not yet run. Nothing is claimed
+as passing that has not actually run.
+
+## Tooling installed by Claude on 2026-09-17
+
+- **AWS CLI v2.36.47** — `winget install --id Amazon.AWSCLI -e`, installed to
+  `C:\Program Files\Amazon\AWSCLIV2ws.exe`. winget handled elevation despite the session not
+  being an administrator.
+- **AWS SAM CLI v1.166.2** — `winget install --id Amazon.SAM-CLI -e`, installed to
+  `C:\Program Files\Amazon\AWSSAMCLIin\sam.cmd`.
+- A first attempt installed SAM through `pip install --user aws-sam-cli`. It worked, but pinned
+  `click 8.1.8` into the user's Python and broke `huggingface-hub`, which needs `click>=8.4.2`. That
+  install was removed and click restored; `python -m pip check` now reports no broken requirements.
+  **Do not use the pip route for SAM on this machine.**
+- Note for future sessions: neither CLI is on PATH inside this harness's shells, because shell state
+  does not persist between tool calls. Invoke them by full path, or refresh PATH from the machine and
+  user environment first.
+
+## Active blockers
+
+1. **No AWS credentials.** The CLIs are installed but there is no `~/.aws` and no `AWS_*`
+   environment variable. Only the user can supply this: Claude must not enter access keys. Blocks
+   deployment, real Textract, real Bedrock, and every `aws-*` check in `tests.json`. Does **not**
+   block the fixtures generator or the frontend.
+2. **Ponytail plugin is not installed.** The user has the two commands. Until it is present, its
+   published principles are applied manually (no unnecessary features, reuse before writing, prefer
+   platform capabilities, prefer installed dependencies, minimum maintainable implementation, never
+   strip security/validation/accessibility/error-handling/data-loss protection). The real
+   `/ponytail` review must still be run before completion.
+3. **Bedrock model access.** Requires a console action by the user — model access is granted per
+   account and region, and Anthropic models additionally require accepting an end-user licence,
+   which Claude must not accept on the user's behalf. Once credentials exist, the model ID will be
+   verified with `aws bedrock list-foundation-models --region ap-south-1` rather than from the docs:
+   the per-region list has moved out of the AWS documentation pages, so the API is now the
+   authoritative source. `BEDROCK_MODEL_ID` has no default; an empty value is a supported
+   configuration in which the analysis works and explanations use reviewed English fallback copy.
+4. ~~Commit author identity.~~ **Resolved 2026-09-18.** The user confirmed
+   `navneet-cerecode <cerecode9@gmail.com>`, which matches the existing global config. Set
+   repo-locally rather than relying on the global value, so this repository's authorship is
+   explicit. No GitHub remote exists yet, and creating or pushing a public repository still needs
+   separate approval.
+
+## AWS resources created
+
+None yet.
+
+## Cleanup required
+
+Nothing yet. Every created resource will be listed here and in `docs/aws-cleanup.md` as it is
+created.
+
+## Known limitations
+
+- JPEG and PNG only; no PDF support in the MVP.
+- Single-page images only, max 5 MB each, max 3 documents per analysis.
+- One configurable scholarship-readiness template. Requirements vary by scholarship and the UI must
+  say so.
+- Readiness review only. No eligibility evaluation, no authenticity checking, no submission.
+
+## Next action
+
+1. `fixtures/` — generate the synthetic document images programmatically, with the account-number
+   band deliberately degraded so real Textract returns low confidence rather than the threshold
+   being tuned to fit.
+2. `apps/web` — the frontend, starting with an Impeccable design direction pass.
+3. Once credentials exist: verify the Bedrock model ID with `aws bedrock list-foundation-models`,
+   `sam deploy`, Amplify Hosting, then the real Textract and Bedrock smoke tests.
