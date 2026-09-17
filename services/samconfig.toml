@@ -28,12 +28,12 @@ confirm_changeset = false
 resolve_s3 = true
 # BedrockModelId is deliberately empty for the first deploy.
 #
-# anthropic.claude-3-haiku-20240307-v1:0 is available on-demand in ap-south-1 and is the intended
-# model, but on 2026-09-18 Bedrock returned AccessDeniedException "Your account is currently being
-# verified" for this account. An empty model ID is a supported configuration: no Bedrock call is
-# made at all, the deterministic analysis is unaffected, and explanations use reviewed English
-# fallback copy with explanationsDegraded reported as true. Set the model ID once verification
-# completes.
+# The intended model is apac.amazon.nova-lite-v1:0 (an APAC cross-region inference profile — Nova
+# is not on-demand in ap-south-1 directly). It is the cheapest model whose agreement this account
+# can accept; Anthropic models report agreementAvailability NOT_AVAILABLE for a new account. Until
+# the agreement is accepted in the Bedrock console, an empty model ID is a supported configuration:
+# no Bedrock call is made, the deterministic analysis is unaffected, and explanations use reviewed
+# English fallback copy with explanationsDegraded reported as true.
 #
 # AllowedOrigin starts as the local dev server because Amplify Hosting does not exist yet. It must
 # be updated to the deployed frontend origin before the public demo; the API URL does not change.

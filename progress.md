@@ -203,20 +203,28 @@ as passing that has not actually run.
 
 ## Active blockers
 
-1. **Bedrock is blocked by AWS account verification, not by model access.**
-   `anthropic.claude-3-haiku-20240307-v1:0` is confirmed available on-demand in `ap-south-1` via
-   `aws bedrock list-foundation-models`, and it is the intended model. A real `Converse` call
-   returns: `AccessDeniedException: Your account is currently being verified. Verification normally
-takes less than 2 hours.`
+1. **Bedrock: account verification has completed; model access is now the gate.** On
+   2026-09-18 the error changed from `AccessDeniedException ... being verified` to
+   `ValidationException: Operation not allowed` for every model tried. `get-foundation-model-
+availability` shows why, precisely:
 
-   Amazon Nova is not offered on-demand in `ap-south-1`; the Anthropic options there are Claude 3
-   Haiku and Claude 3 Sonnet, and Haiku is the cheaper.
+   | Model                                     | agreementAvailability | authorizationStatus |
+   | ----------------------------------------- | --------------------- | ------------------- |
+   | anthropic.claude-3-haiku-20240307-v1:0    | NOT_AVAILABLE         | NOT_AUTHORIZED      |
+   | anthropic.claude-haiku-4-5-20251001-v1:0  | NOT_AVAILABLE         | NOT_AUTHORIZED      |
+   | anthropic.claude-3-5-sonnet-20241022-v2:0 | NOT_AVAILABLE         | NOT_AUTHORIZED      |
+   | amazon.nova-lite-v1:0                     | AVAILABLE             | NOT_AUTHORIZED      |
+   | amazon.nova-micro-v1:0                    | AVAILABLE             | NOT_AUTHORIZED      |
 
-   The stack is deployed with `BEDROCK_MODEL_ID` empty, which is a supported configuration: no
-   Bedrock call is made, the deterministic analysis is unaffected, and explanations use reviewed
-   English fallback copy with `explanationsDegraded: true`. **Textract is not affected** — it was
-   probed on the live account and returned results. To finish: wait for verification, redeploy with
-   the model ID, run the Bedrock smoke test.
+   Anthropic models are not offered to this new account without a use-case submission. Amazon Nova
+   is not on-demand in `ap-south-1` directly, but `list-inference-profiles` exposes
+   `apac.amazon.nova-lite-v1:0` and `apac.amazon.nova-micro-v1:0`, which route within the APAC
+   region set. **Chosen model: `apac.amazon.nova-lite-v1:0`** — cheap, agreement available, better
+   multilingual quality than Micro, and inference stays in APAC.
+
+   Enabling it means accepting a model agreement in the Bedrock console (Model access). That is an
+   account setting and an agreement, so the user does it, not Claude. Until then the stack runs with
+   `BEDROCK_MODEL_ID` empty and the fallback path, which is verified live.
 
 2. **Ponytail plugin is not installed.** The user has the two commands. Until it is present, its
    published principles are applied manually (no unnecessary features, reuse before writing, prefer
@@ -271,5 +279,5 @@ per-request, and S3 holds a few kilobytes that expire within a day.
    wherever the build wants them.
 2. Amplify Hosting, then update the stack's `AllowedOrigin` from `http://localhost:5173` to the
    deployed frontend origin. The API URL does not change.
-3. When account verification completes: redeploy with
-   `BedrockModelId=anthropic.claude-3-haiku-20240307-v1:0` and run the Bedrock smoke test.
+3. When the user enables Amazon Nova Lite in the Bedrock console: redeploy with
+   `BedrockModelId=apac.amazon.nova-lite-v1:0` and run the Bedrock smoke test in en/hi/gu.
