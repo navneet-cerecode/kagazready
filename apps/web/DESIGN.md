@@ -6,7 +6,6 @@ colors:
   paper-bright: '#fbf8f1'
   paper-deep: '#ede6d6'
   ink: '#0f1f3d'
-  ink-soft: '#2b3a5c'
   graphite: '#2f3338'
   graphite-soft: '#5b6169'
   graphite-faint: '#8a9099'
@@ -247,7 +246,6 @@ of which has a solid, an "ink" for text, and a tint for fills.
   progress-bar track, and the disabled primary button fill.
 - **Ink Navy** (`ink`): headings, the wordmark, document titles, the active language segment fill,
   the "No issues found" token border and text, and the dialog backdrop at 40%.
-- **Soft Ink** (`ink-soft`): defined in the token sheet; not yet used by a shipped surface.
 - **Graphite** (`graphite`): body text, reasons, actions, evidence values.
 - **Soft Graphite** (`graphite-soft`): secondary text: gutter row numbers, hints, field labels,
   footer, disclaimers, OCR confidence, quiet links.

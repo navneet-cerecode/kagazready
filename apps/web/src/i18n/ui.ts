@@ -9,7 +9,6 @@ import type { Language } from '@kagazready/contracts';
  * native-speaker review is recorded as an open limitation.
  */
 export interface UiStrings {
-  languageName: string;
   tagline: string;
   intro: string;
   notThis: string;
@@ -21,7 +20,6 @@ export interface UiStrings {
   fileHint: string;
   chooseFile: string;
   uploading: string;
-  uploaded: string;
 
   checkDocuments: string;
   trySample: string;
@@ -54,8 +52,6 @@ export interface UiStrings {
   plainNoteFallback: string;
   plainNoteUnavailable: string;
 
-  replaceThis: string;
-  checkAgain: string;
   deleteHeading: string;
   deleteBody: string;
   deleteAction: string;
@@ -85,7 +81,6 @@ export interface UiStrings {
 }
 
 const en: UiStrings = {
-  languageName: 'English',
   tagline: 'Check the paperwork before the portal checks you.',
   intro:
     'Add photos of your Class XII marksheet, income certificate and bank proof. The text is read by Amazon Textract, then checked by fixed rules for missing, unreadable or mismatched details.',
@@ -100,7 +95,6 @@ const en: UiStrings = {
   fileHint: 'A photo from your phone camera is fine. JPEG or PNG, up to 5 MB, one page.',
   chooseFile: 'Choose a file for',
   uploading: 'Uploading',
-  uploaded: 'Uploaded',
 
   checkDocuments: 'Check these documents',
   trySample: 'Try the sample set instead',
@@ -143,8 +137,6 @@ const en: UiStrings = {
   plainNoteUnavailable:
     'A simplified note in this language is not available right now; the reviewed English one is shown.',
 
-  replaceThis: 'Replace this document',
-  checkAgain: 'Check again',
   deleteHeading: 'Finished?',
   deleteBody:
     'Delete the uploaded photos and this result now. They are removed automatically within a day either way.',
@@ -182,7 +174,6 @@ const en: UiStrings = {
 };
 
 const hi: UiStrings = {
-  languageName: 'हिन्दी',
   tagline: 'पोर्टल आपके काग़ज़ जाँचे, उससे पहले आप जाँच लें।',
   intro:
     'अपनी कक्षा 12 की अंकतालिका, आय प्रमाण पत्र और बैंक प्रमाण की फ़ोटो जोड़ें। Amazon Textract टेक्स्ट पढ़ता है, फिर तय नियम अधूरी, अस्पष्ट या मेल न खाने वाली जानकारी की जाँच करते हैं।',
@@ -197,7 +188,6 @@ const hi: UiStrings = {
   fileHint: 'फ़ोन कैमरे की फ़ोटो चलेगी। JPEG या PNG, 5 MB तक, एक पेज।',
   chooseFile: 'इसके लिए फ़ाइल चुनें:',
   uploading: 'अपलोड हो रहा है',
-  uploaded: 'अपलोड हो गया',
 
   checkDocuments: 'ये दस्तावेज़ जाँचें',
   trySample: 'इसके बजाय नमूना सेट आज़माएँ',
@@ -240,8 +230,6 @@ const hi: UiStrings = {
   plainNoteUnavailable:
     'इस भाषा में सरल टिप्पणी अभी उपलब्ध नहीं है; समीक्षित अंग्रेज़ी टिप्पणी दिखाई गई है।',
 
-  replaceThis: 'यह दस्तावेज़ बदलें',
-  checkAgain: 'दोबारा जाँचें',
   deleteHeading: 'हो गया?',
   deleteBody:
     'अपलोड की गई फ़ोटो और यह परिणाम अभी हटा दें। वैसे भी ये एक दिन के भीतर अपने आप हट जाते हैं।',
@@ -280,7 +268,6 @@ const hi: UiStrings = {
 };
 
 const gu: UiStrings = {
-  languageName: 'ગુજરાતી',
   tagline: 'પોર્ટલ તમારા કાગળ તપાસે તે પહેલાં તમે તપાસી લો.',
   intro:
     'તમારી ધોરણ 12 ની માર્કશીટ, આવક પ્રમાણપત્ર અને બેંક પુરાવાના ફોટા ઉમેરો. Amazon Textract લખાણ વાંચે છે, પછી નક્કી નિયમો ખૂટતી, અસ્પષ્ટ કે મેળ ન ખાતી માહિતી તપાસે છે.',
@@ -295,7 +282,6 @@ const gu: UiStrings = {
   fileHint: 'ફોન કેમેરાનો ફોટો ચાલશે. JPEG અથવા PNG, 5 MB સુધી, એક પાનું.',
   chooseFile: 'આ માટે ફાઇલ પસંદ કરો:',
   uploading: 'અપલોડ થઈ રહ્યું છે',
-  uploaded: 'અપલોડ થયું',
 
   checkDocuments: 'આ દસ્તાવેજો તપાસો',
   trySample: 'તેના બદલે નમૂના સેટ અજમાવો',
@@ -337,8 +323,6 @@ const gu: UiStrings = {
   plainNoteFallback: 'સરળ શબ્દોમાં (સમીક્ષિત અંગ્રેજી)',
   plainNoteUnavailable: 'આ ભાષામાં સરળ નોંધ હાલ ઉપલબ્ધ નથી; સમીક્ષિત અંગ્રેજી નોંધ બતાવી છે.',
 
-  replaceThis: 'આ દસ્તાવેજ બદલો',
-  checkAgain: 'ફરીથી તપાસો',
   deleteHeading: 'પૂરું થયું?',
   deleteBody:
     'અપલોડ કરેલા ફોટા અને આ પરિણામ હમણાં જ કાઢી નાખો. એમ પણ તે એક દિવસમાં આપોઆપ કાઢી નંખાય છે.',
