@@ -35,7 +35,13 @@ export interface UiStrings {
   processingHonest: string;
 
   resultHeading: string;
+  yourDocuments: string;
+  languageLabel: string;
   findingsHeading: string;
+  markMissing: string;
+  addPhotoFor: string;
+  replacePhotoFor: string;
+  archServices: string[];
   noFindingsBody: string;
   readingsHeading: string;
   readingsIntro: string;
@@ -91,7 +97,7 @@ const en: UiStrings = {
   addPhoto: 'Add photo',
   replacePhoto: 'Replace photo',
   remove: 'Remove',
-  fileHint: 'JPEG or PNG, up to 5 MB, one page.',
+  fileHint: 'A photo from your phone camera is fine. JPEG or PNG, up to 5 MB, one page.',
   chooseFile: 'Choose a file for',
   uploading: 'Uploading',
   uploaded: 'Uploaded',
@@ -110,7 +116,20 @@ const en: UiStrings = {
     'This usually takes a few seconds. There is no percentage because none would be real.',
 
   resultHeading: 'Readiness',
-  findingsHeading: 'Marks',
+  yourDocuments: 'Your documents',
+  languageLabel: 'Language',
+  findingsHeading: 'What to fix',
+  markMissing: 'Missing',
+  addPhotoFor: 'Add photo',
+  replacePhotoFor: 'Replace photo',
+  archServices: [
+    'Amazon S3',
+    'AWS Lambda',
+    'Amazon Textract',
+    'Deterministic rules',
+    'Amazon Bedrock',
+    'Amazon DynamoDB',
+  ],
   noFindingsBody: 'Nothing in these documents needed a mark.',
   readingsHeading: 'What was read',
   readingsIntro: 'The values the rules worked from. Account numbers are shown masked.',
@@ -175,7 +194,7 @@ const hi: UiStrings = {
   addPhoto: 'फ़ोटो जोड़ें',
   replacePhoto: 'फ़ोटो बदलें',
   remove: 'हटाएँ',
-  fileHint: 'JPEG या PNG, 5 MB तक, एक पेज।',
+  fileHint: 'फ़ोन कैमरे की फ़ोटो चलेगी। JPEG या PNG, 5 MB तक, एक पेज।',
   chooseFile: 'इसके लिए फ़ाइल चुनें:',
   uploading: 'अपलोड हो रहा है',
   uploaded: 'अपलोड हो गया',
@@ -194,7 +213,20 @@ const hi: UiStrings = {
     'इसमें आमतौर पर कुछ सेकंड लगते हैं। प्रतिशत इसलिए नहीं दिखाया गया क्योंकि वह सच्चा नहीं होता।',
 
   resultHeading: 'तैयारी',
-  findingsHeading: 'निशान',
+  yourDocuments: 'आपके दस्तावेज़',
+  languageLabel: 'भाषा',
+  findingsHeading: 'क्या ठीक करें',
+  markMissing: 'नहीं मिला',
+  addPhotoFor: 'फ़ोटो जोड़ें',
+  replacePhotoFor: 'फ़ोटो बदलें',
+  archServices: [
+    'Amazon S3',
+    'AWS Lambda',
+    'Amazon Textract',
+    'तय नियम',
+    'Amazon Bedrock',
+    'Amazon DynamoDB',
+  ],
   noFindingsBody: 'इन दस्तावेज़ों में किसी निशान की ज़रूरत नहीं पड़ी।',
   readingsHeading: 'क्या पढ़ा गया',
   readingsIntro: 'वे मान जिन पर नियम चले। खाता संख्या छिपाकर दिखाई गई है।',
@@ -260,7 +292,7 @@ const gu: UiStrings = {
   addPhoto: 'ફોટો ઉમેરો',
   replacePhoto: 'ફોટો બદલો',
   remove: 'દૂર કરો',
-  fileHint: 'JPEG અથવા PNG, 5 MB સુધી, એક પાનું.',
+  fileHint: 'ફોન કેમેરાનો ફોટો ચાલશે. JPEG અથવા PNG, 5 MB સુધી, એક પાનું.',
   chooseFile: 'આ માટે ફાઇલ પસંદ કરો:',
   uploading: 'અપલોડ થઈ રહ્યું છે',
   uploaded: 'અપલોડ થયું',
@@ -279,7 +311,20 @@ const gu: UiStrings = {
     'આમાં સામાન્ય રીતે થોડી સેકંડ લાગે છે. ટકાવારી એટલા માટે નથી બતાવી કારણ કે તે સાચી ન હોત.',
 
   resultHeading: 'તૈયારી',
-  findingsHeading: 'નિશાન',
+  yourDocuments: 'તમારા દસ્તાવેજો',
+  languageLabel: 'ભાષા',
+  findingsHeading: 'શું સુધારવું',
+  markMissing: 'મળ્યું નથી',
+  addPhotoFor: 'ફોટો ઉમેરો',
+  replacePhotoFor: 'ફોટો બદલો',
+  archServices: [
+    'Amazon S3',
+    'AWS Lambda',
+    'Amazon Textract',
+    'નક્કી નિયમો',
+    'Amazon Bedrock',
+    'Amazon DynamoDB',
+  ],
   noFindingsBody: 'આ દસ્તાવેજોમાં કોઈ નિશાનની જરૂર પડી નથી.',
   readingsHeading: 'શું વંચાયું',
   readingsIntro: 'જે મૂલ્યો પર નિયમો ચાલ્યા. ખાતા નંબર છુપાવીને બતાવ્યો છે.',

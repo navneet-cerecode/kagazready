@@ -188,6 +188,11 @@ describe('the journey', () => {
     const result = await screen.findByTestId('result');
     expect(within(result).getByTestId('status-label')).toHaveTextContent('Incomplete');
     expect(result).toHaveTextContent(/not uploaded: income certificate/i);
+    // An incomplete result must offer a way to complete it, not just a way to delete it.
+    expect(within(result).getByLabelText(/add photo: income certificate/i)).toBeInTheDocument();
+    expect(within(result).getByLabelText(/add photo: bank proof/i)).toBeInTheDocument();
+    // Every mark states its own status in text, not colour alone.
+    expect(within(result).getAllByTestId('finding')[0]).toHaveTextContent(/missing/i);
   });
 
   it('replaces one document and reaches no issues found', async () => {
@@ -199,8 +204,13 @@ describe('the journey', () => {
     await user.click(screen.getByTestId('check'));
     await screen.findByTestId('result');
 
+    // The replace control lives inside the mark it belongs to.
+    const bankMark = screen
+      .getAllByTestId('finding')
+      .find((el) => /bank proof/i.test(el.textContent ?? ''));
+    expect(bankMark).toBeDefined();
     await user.upload(
-      screen.getByLabelText(/replace this document: bank proof/i),
+      within(bankMark!).getByLabelText(/replace photo: bank proof/i),
       pngFile('bank-2.png'),
     );
 

@@ -22,7 +22,7 @@ interface ProofSheetProps {
 
 export function ProofSheet({ state, strings, onFile, disabled }: ProofSheetProps) {
   return (
-    <ol className="rule-y m-0 list-none p-0" aria-label={strings.findingsHeading}>
+    <ol className="rule-y m-0 list-none p-0" aria-label={strings.yourDocuments}>
       {DOCUMENT_TYPES.map((documentType, index) => (
         <SheetRow
           key={documentType}
@@ -52,7 +52,7 @@ function SheetRow({ index, documentType, state, strings, onFile, disabled }: She
   return (
     <li className="hairline-b grid grid-cols-[2.25rem_1fr] gap-x-3 py-4 last:border-b-0 sm:grid-cols-[3rem_1fr] sm:py-5">
       <span
-        className="tabular font-display text-heading pt-0.5 text-graphite-faint select-none"
+        className="tabular font-display text-heading pt-0.5 text-graphite-soft select-none"
         aria-hidden="true"
       >
         {index}
@@ -60,13 +60,13 @@ function SheetRow({ index, documentType, state, strings, onFile, disabled }: She
 
       <div className="min-w-0">
         <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
-          <h3 className="font-display text-heading m-0 text-ink">{label}</h3>
+          <h2 className="font-display text-heading m-0 text-ink">{label}</h2>
           {slot.file && !uploading && (
             <button
               type="button"
               onClick={() => onFile(documentType, null)}
               disabled={disabled}
-              className="text-small text-graphite-soft underline underline-offset-4 hover:text-red-ink disabled:opacity-50"
+              className="min-h-11 text-small text-graphite-soft underline underline-offset-4 hover:text-red-ink disabled:opacity-50"
             >
               {strings.remove}
             </button>
@@ -102,7 +102,7 @@ function SheetRow({ index, documentType, state, strings, onFile, disabled }: She
           {!uploading && (
             <label
               htmlFor={inputId}
-              className={`text-small inline-flex cursor-pointer items-center gap-1.5 rounded-sm border border-line-strong px-3 py-1.5 text-ink transition-colors duration-(--duration-micro) hover:bg-paper-deep has-[:focus-visible]:ring-focus ${disabled ? 'pointer-events-none opacity-50' : ''}`}
+              className={`text-small inline-flex cursor-pointer items-center gap-1.5 min-h-11 rounded-sm border border-line-strong px-3 text-ink transition-colors duration-(--duration-micro) hover:bg-paper-deep active:bg-paper-deep has-[:focus-visible]:ring-focus ${disabled ? 'pointer-events-none opacity-50' : ''}`}
             >
               <Icon name={slot.file ? 'refresh' : 'plus'} size={16} />
               {slot.file ? strings.replacePhoto : strings.addPhoto}
@@ -114,7 +114,9 @@ function SheetRow({ index, documentType, state, strings, onFile, disabled }: She
           <div className="mt-3" role="status" aria-live="polite">
             <div className="flex justify-between text-micro text-graphite-soft">
               <span>{strings.uploading}</span>
-              <span className="tabular">{Math.round(slot.progress * 100)}%</span>
+              <span className="tabular">
+                {slot.progress > 0 ? `${Math.round(slot.progress * 100)}%` : '…'}
+              </span>
             </div>
             <div className="mt-1 h-1 overflow-hidden rounded-hair bg-paper-deep">
               <div

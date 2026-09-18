@@ -16,8 +16,8 @@ import { Icon, type IconName } from './Icon.js';
  *
  * The status token comes first and says one of three things. Below it, every finding is a mark in
  * the margin: a coloured stroke in the gutter, the title, the exact masked text it was read from,
- * why it matters, and what to do. The rule id and "decided by rule" line are not decoration — they
- * are the product's claim that no model made this call.
+ * the plain-words note, why it matters, what to do — and the control that does it, right there,
+ * so the remedy is pinned to the mark the way the mark is pinned to its evidence.
  */
 
 interface ResultSheetProps {
@@ -43,6 +43,10 @@ const STATUS_TONE: Record<AnalysisResponse['status'], string> = {
   no_issues_found: 'border-ink text-ink bg-paper-bright',
 };
 
+/** Only a real change in what was found earns the withdraw sequence. A language switch does not. */
+const findingsSignature = (result: AnalysisResponse) =>
+  `${result.status}|${result.findings.map((f) => f.id).join(',')}`;
+
 export function ResultSheet({
   result,
   language,
@@ -56,7 +60,7 @@ export function ResultSheet({
   const container = useRef<HTMLDivElement>(null);
 
   /*
-   * The one authored sequence. When a new result arrives after marks were on the sheet, the old
+   * The one authored sequence. When the findings change after marks were on the sheet, the old
    * marks withdraw into the margin before the new state appears. React would swap the DOM at once,
    * so the sheet displays a held copy of the result until the exit has played.
    */
@@ -68,8 +72,9 @@ export function ResultSheet({
     pendingResult.current = result;
     const marks = container.current?.querySelectorAll<HTMLElement>('[data-mark]') ?? [];
     const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const sameFindings = findingsSignature(result) === findingsSignature(shown);
 
-    if (marks.length === 0 || reduce) {
+    if (marks.length === 0 || reduce || sameFindings) {
       setShown(result);
       return;
     }
@@ -89,6 +94,7 @@ export function ResultSheet({
     };
   }, [result, shown]);
 
+  const shownSignature = findingsSignature(shown);
   useGSAP(
     () => {
       const mm = gsap.matchMedia();
@@ -106,19 +112,20 @@ export function ResultSheet({
       });
       return () => mm.revert();
     },
-    { scope: container, dependencies: [shown] },
+    { scope: container, dependencies: [shownSignature] },
   );
 
   const status = statusCopy(shown.status, language);
-  const documentsPresent = shown.documentTypesPresent;
+  const present = new Set(shown.documentTypesPresent);
   const expires = new Date(shown.expiresAt);
+  const hasBankMark = shown.findings.some((f) => f.documentTypes[0] === 'bank_proof');
 
   return (
     <div ref={container}>
       <section aria-labelledby="status-heading">
-        <h2 id="status-heading" className="sr-only">
+        <h1 id="status-heading" className="sr-only">
           {strings.resultHeading}
-        </h2>
+        </h1>
         <div data-status className="flex flex-col gap-3">
           <p
             className={`m-0 inline-flex w-fit items-center gap-2 rounded-sm border px-3 py-1.5 font-display text-heading ${STATUS_TONE[shown.status]}`}
@@ -132,11 +139,30 @@ export function ResultSheet({
         </div>
       </section>
 
+      {/* In sample mode the demo's one obvious next step sits right under the status. */}
+      {sampleMode && hasBankMark && (
+        <button
+          type="button"
+          onClick={onUseCorrectedSample}
+          disabled={busy}
+          data-testid="use-corrected-sample"
+          className="mt-5 inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-sm bg-teal px-5 text-body font-semibold text-paper-bright transition-colors duration-(--duration-micro) hover:bg-teal-deep active:bg-teal-deep disabled:opacity-60 sm:w-auto"
+        >
+          <Icon name="refresh" size={18} />
+          {strings.useCorrectedSample}
+        </button>
+      )}
+
       <section className="mt-8" aria-labelledby="marks-heading">
         <h2 id="marks-heading" className="font-display text-heading m-0 text-ink">
           {strings.findingsHeading}
           {shown.findings.length > 0 && (
-            <span className="tabular ml-2 text-graphite-faint">{shown.findings.length}</span>
+            <>
+              {' '}
+              <span className="tabular text-graphite-soft" aria-label={`${shown.findings.length}`}>
+                {shown.findings.length}
+              </span>
+            </>
           )}
         </h2>
 
@@ -155,46 +181,18 @@ export function ResultSheet({
                 finding={finding}
                 language={language}
                 strings={strings}
-                degraded={shown.explanationsDegraded}
+                busy={busy}
+                present={present.has(finding.documentTypes[0] ?? 'bank_proof')}
+                onReplace={onReplace}
               />
             ))}
           </ol>
         )}
       </section>
 
-      {shown.status !== 'no_issues_found' && (
-        <section className="mt-8" aria-label={strings.replaceThis}>
-          {sampleMode && shown.findings.some((f) => f.documentTypes[0] === 'bank_proof') ? (
-            <button
-              type="button"
-              onClick={onUseCorrectedSample}
-              disabled={busy}
-              data-testid="use-corrected-sample"
-              className="inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-sm bg-teal px-5 text-body font-semibold text-paper-bright transition-colors duration-(--duration-micro) hover:bg-teal-deep disabled:opacity-60 sm:w-auto"
-            >
-              <Icon name="refresh" size={18} />
-              {strings.useCorrectedSample}
-            </button>
-          ) : null}
-
-          <ul className="mt-4 m-0 flex list-none flex-wrap gap-3 p-0">
-            {documentsPresent.map((documentType) => (
-              <ReplaceControl
-                key={documentType}
-                documentType={documentType}
-                language={language}
-                strings={strings}
-                disabled={busy}
-                onReplace={onReplace}
-              />
-            ))}
-          </ul>
-        </section>
-      )}
-
       <section className="mt-10" aria-labelledby="readings-heading">
         <details className="group">
-          <summary className="flex cursor-pointer list-none items-center gap-2 text-body text-ink [&::-webkit-details-marker]:hidden">
+          <summary className="flex min-h-11 cursor-pointer list-none items-center gap-2 text-body text-ink [&::-webkit-details-marker]:hidden">
             <Icon
               name="chevron"
               size={18}
@@ -214,12 +212,12 @@ export function ResultSheet({
                 <dl className="hairline-t mt-2 mb-0">
                   {reading.fields.map((field) => (
                     <div key={field.fieldId} className="hairline-b py-1.5">
-                      <dt className="text-micro text-graphite-soft">
+                      <dt className="text-micro text-graphite-soft first-letter:uppercase">
                         {fieldLabel(field.fieldId, language)}
                       </dt>
                       <dd className="tabular m-0 flex items-baseline justify-between gap-3 text-small text-graphite">
                         <span className="font-mono">{field.value}</span>
-                        <span className="text-micro text-graphite-faint">
+                        <span className="text-micro whitespace-nowrap text-graphite-soft">
                           {Math.round(field.ocrConfidence)}%
                         </span>
                       </dd>
@@ -233,14 +231,18 @@ export function ResultSheet({
       </section>
 
       {/* Delete sits on its own, below everything, with room around it: nothing to hit by accident. */}
-      <section className="mt-16 mb-4" aria-labelledby="delete-heading">
+      <section className="mt-14 mb-4" aria-labelledby="delete-heading">
         <DeleteControl strings={strings} busy={busy} onDelete={onDelete} />
-        <p className="text-micro mt-4 mb-0 text-graphite-faint">
+        <p className="text-micro mt-4 mb-0 text-graphite-soft">
           {strings.expires}{' '}
           <time dateTime={shown.expiresAt} className="tabular">
             {expires.toLocaleString(language === 'en' ? 'en-IN' : language, {
-              dateStyle: 'medium',
-              timeStyle: 'short',
+              day: 'numeric',
+              month: 'short',
+              year: 'numeric',
+              hour: 'numeric',
+              minute: '2-digit',
+              timeZoneName: 'short',
             })}
           </time>
         </p>
@@ -255,13 +257,19 @@ interface FindingMarkProps {
   finding: PresentedFinding;
   language: Language;
   strings: UiStrings;
-  degraded: boolean;
+  busy: boolean;
+  /** Whether the document this mark concerns was uploaded at all. */
+  present: boolean;
+  onReplace: (documentType: DocumentType, file: File) => void;
 }
 
-function FindingMark({ finding, language, strings }: FindingMarkProps) {
-  const tone = finding.status === 'missing' ? 'mark-red' : 'mark-amber';
-  const iconName: IconName = finding.status === 'missing' ? 'missing' : 'mark';
+function FindingMark({ finding, language, strings, busy, present, onReplace }: FindingMarkProps) {
+  const missing = finding.status === 'missing';
+  const tone = missing ? 'mark-red' : 'mark-amber';
+  const iconName: IconName = missing ? 'missing' : 'mark';
+  const statusLabel = missing ? strings.markMissing : statusCopy('needs_review', language).label;
   const explanation = finding.explanation;
+  const subject = finding.documentTypes[0] ?? 'bank_proof';
 
   return (
     <li
@@ -274,11 +282,21 @@ function FindingMark({ finding, language, strings }: FindingMarkProps) {
           <Icon
             name={iconName}
             size={20}
-            className={`mt-1 shrink-0 ${finding.status === 'missing' ? 'text-red' : 'text-amber'}`}
+            className={`mt-1 shrink-0 ${missing ? 'text-red' : 'text-amber'}`}
           />
-          <span>{finding.text.title}</span>
+          <span>
+            <span className="sr-only">{statusLabel}: </span>
+            {finding.text.title}
+          </span>
         </h3>
-        <p className="text-micro m-0 text-graphite-soft">
+        <p className="text-small m-0 text-graphite-soft">
+          <span
+            className={`font-semibold ${missing ? 'text-red-ink' : 'text-amber-ink'}`}
+            aria-hidden="true"
+          >
+            {statusLabel}
+          </span>
+          {' · '}
           {finding.documentTypes.map((d) => documentTypeLabel(d, language)).join(' · ')}
         </p>
       </div>
@@ -293,7 +311,7 @@ function FindingMark({ finding, language, strings }: FindingMarkProps) {
               <dd className="tabular m-0 text-small text-graphite">
                 <span className="font-mono">{item.value}</span>
                 {item.ocrConfidence !== null && (
-                  <span className="ml-2 text-micro text-graphite-faint">
+                  <span className="ml-2 text-micro whitespace-nowrap text-graphite-soft">
                     {strings.confidence} {Math.round(item.ocrConfidence)}%
                   </span>
                 )}
@@ -301,6 +319,23 @@ function FindingMark({ finding, language, strings }: FindingMarkProps) {
             </div>
           ))}
         </dl>
+      )}
+
+      {/* Plain words first: it is the sentence a parent or a first-time reader needs. */}
+      {explanation && (
+        <div className="mt-3 rounded-sm bg-paper-bright px-3 py-2">
+          <p className="m-0 text-small text-graphite">
+            <span className="block text-micro font-semibold text-graphite-soft">
+              {explanation.source === 'fallback' ? strings.plainNoteFallback : strings.plainNote}
+            </span>
+            <span lang={explanation.language}>{explanation.text}</span>
+          </p>
+          {explanation.translationUnavailable && (
+            <p className="text-micro mt-1 mb-0 text-graphite-soft">
+              {strings.plainNoteUnavailable}
+            </p>
+          )}
+        </div>
       )}
 
       <div className="mt-3 grid gap-3 sm:grid-cols-2">
@@ -318,71 +353,70 @@ function FindingMark({ finding, language, strings }: FindingMarkProps) {
         </p>
       </div>
 
-      {explanation && (
-        <div className="mt-3 rounded-sm bg-paper-bright px-3 py-2">
-          <p className="m-0 text-small text-graphite">
-            <span className="block text-micro font-semibold text-graphite-soft">
-              {explanation.source === 'fallback' ? strings.plainNoteFallback : strings.plainNote}
-            </span>
-            <span lang={explanation.language}>{explanation.text}</span>
-          </p>
-          {explanation.translationUnavailable && (
-            <p className="text-micro mt-1 mb-0 text-graphite-soft">
-              {strings.plainNoteUnavailable}
-            </p>
-          )}
-        </div>
-      )}
-
-      <p className="text-micro mt-3 mb-0 text-graphite-faint">
-        {strings.decidedBy} <code className="font-mono">{finding.ruleId}</code>
-      </p>
+      <div className="mt-4 flex flex-wrap items-center gap-x-5 gap-y-2">
+        <DocumentControl
+          documentType={subject}
+          present={present}
+          language={language}
+          strings={strings}
+          disabled={busy}
+          onFile={onReplace}
+        />
+        <p className="text-micro m-0 text-graphite-soft">
+          {strings.decidedBy} <code className="font-mono">{finding.ruleId}</code>
+        </p>
+      </div>
     </li>
   );
 }
 
 // ---------------------------------------------------------------------------
 
-interface ReplaceControlProps {
+interface DocumentControlProps {
   documentType: DocumentType;
+  present: boolean;
   language: Language;
   strings: UiStrings;
   disabled: boolean;
-  onReplace: (documentType: DocumentType, file: File) => void;
+  onFile: (documentType: DocumentType, file: File) => void;
 }
 
-function ReplaceControl({
+/** "Add photo: Bank proof" when the document was never uploaded, "Replace photo: …" when it was. */
+function DocumentControl({
   documentType,
+  present,
   language,
   strings,
   disabled,
-  onReplace,
-}: ReplaceControlProps) {
+  onFile,
+}: DocumentControlProps) {
   const id = useId();
   const label = documentTypeLabel(documentType, language);
+  const verb = present ? strings.replacePhotoFor : strings.addPhotoFor;
   return (
-    <li>
+    <>
       <input
         id={id}
         type="file"
         accept="image/jpeg,image/png"
         className="sr-only"
         disabled={disabled}
-        aria-label={`${strings.replaceThis}: ${label}`}
+        aria-label={`${verb}: ${label}`}
+        data-testid={`document-control-${documentType}`}
         onChange={(event) => {
           const file = event.currentTarget.files?.[0];
-          if (file) onReplace(documentType, file);
+          if (file) onFile(documentType, file);
           event.currentTarget.value = '';
         }}
       />
       <label
         htmlFor={id}
-        className={`text-small inline-flex cursor-pointer items-center gap-1.5 rounded-sm border border-line-strong px-3 py-1.5 text-ink transition-colors duration-(--duration-micro) hover:bg-paper-deep has-[:focus-visible]:ring-focus ${disabled ? 'pointer-events-none opacity-50' : ''}`}
+        className={`text-small inline-flex min-h-11 cursor-pointer items-center gap-1.5 rounded-sm border border-line-strong px-3 text-ink transition-colors duration-(--duration-micro) hover:bg-paper-deep active:bg-paper-deep has-[:focus-visible]:ring-focus ${disabled ? 'pointer-events-none opacity-50' : ''}`}
       >
-        <Icon name="refresh" size={16} />
-        {strings.replaceThis}: {label}
+        <Icon name={present ? 'refresh' : 'plus'} size={16} />
+        {verb}: {label}
       </label>
-    </li>
+    </>
   );
 }
 
@@ -413,7 +447,7 @@ function DeleteControl({
               onClick={onDelete}
               disabled={busy}
               data-testid="confirm-delete"
-              className="inline-flex min-h-11 items-center gap-2 rounded-sm bg-red px-4 text-small font-semibold text-paper-bright hover:bg-red-ink disabled:opacity-60"
+              className="inline-flex min-h-11 items-center gap-2 rounded-sm bg-red px-4 text-small font-semibold text-paper-bright hover:bg-red-ink active:bg-red-ink disabled:opacity-60"
             >
               <Icon name="trash" size={16} />
               {strings.deleteConfirm}
@@ -422,7 +456,7 @@ function DeleteControl({
               type="button"
               onClick={() => setConfirming(false)}
               disabled={busy}
-              className="text-small text-graphite-soft underline underline-offset-4"
+              className="min-h-11 text-small text-graphite-soft underline underline-offset-4"
             >
               {strings.deleteCancel}
             </button>
@@ -433,7 +467,7 @@ function DeleteControl({
             onClick={() => setConfirming(true)}
             disabled={busy}
             data-testid="delete"
-            className="inline-flex min-h-11 items-center gap-2 rounded-sm border border-red px-4 text-small font-semibold text-red-ink hover:bg-red-tint disabled:opacity-60"
+            className="inline-flex min-h-11 items-center gap-2 rounded-sm border border-red px-4 text-small font-semibold text-red-ink hover:bg-red-tint active:bg-red-tint disabled:opacity-60"
           >
             <Icon name="trash" size={16} />
             {strings.deleteAction}

@@ -28,12 +28,19 @@ export default function App() {
   const busy =
     state.phase === 'uploading' || state.phase === 'analysing' || state.phase === 'deleting';
 
+  // The chosen language must reach <html lang> — including the auto-detected one — or the Indic
+  // font rules and screen-reader voices never switch for the very users detection exists for.
+  useEffect(() => {
+    document.documentElement.lang = state.language;
+  }, [state.language]);
+
   // A new result is read from the top: the status token, then the marks.
   useEffect(() => {
     if (!state.result) return;
     const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     window.scrollTo({ top: 0, behavior: reduce ? 'auto' : 'smooth' });
   }, [state.result]);
+
   const anyFile = DOCUMENT_TYPES.some((type) => state.slots[type].file);
   const showSheet = state.phase === 'compose' || (busy && !state.replacing && !state.result);
 
@@ -65,12 +72,13 @@ export default function App() {
           <button
             type="button"
             onClick={() => setDrawerOpen(true)}
-            className="hidden text-small text-graphite-soft underline underline-offset-4 hover:text-ink sm:inline"
+            className="hidden min-h-11 text-small text-graphite-soft underline underline-offset-4 hover:text-ink sm:inline"
           >
             {strings.howItWorks}
           </button>
           <LanguageSwitch
             value={state.language}
+            label={strings.languageLabel}
             onChange={(language) => void flow.setLanguage(language)}
           />
         </div>
@@ -85,7 +93,7 @@ export default function App() {
             <p className="m-0 text-small text-red-ink">
               {state.error.message}
               {state.error.correlationId && (
-                <span className="ml-2 font-mono text-micro text-graphite-faint">
+                <span className="ml-2 font-mono text-micro text-graphite-soft">
                   {state.error.correlationId}
                 </span>
               )}
@@ -93,7 +101,7 @@ export default function App() {
             <button
               type="button"
               onClick={flow.dismissError}
-              className="text-small text-graphite-soft underline underline-offset-4"
+              className="min-h-11 text-small text-graphite-soft underline underline-offset-4"
             >
               {strings.dismiss}
             </button>
@@ -118,20 +126,23 @@ export default function App() {
                 onClick={() => void flow.runCheck()}
                 disabled={!anyFile || busy}
                 data-testid="check"
-                className="inline-flex min-h-12 items-center justify-center gap-2 rounded-sm bg-teal px-6 text-body font-semibold text-paper-bright transition-colors duration-(--duration-micro) hover:bg-teal-deep disabled:cursor-not-allowed disabled:bg-graphite-faint"
+                className="inline-flex min-h-12 items-center justify-center gap-2 rounded-sm bg-teal px-6 text-body font-semibold text-paper-bright transition-colors duration-(--duration-micro) hover:bg-teal-deep active:bg-teal-deep disabled:cursor-not-allowed disabled:border disabled:border-line-strong disabled:bg-paper-deep disabled:text-graphite-soft"
               >
                 {strings.checkDocuments}
                 <Icon name="arrow" size={18} />
               </button>
-              <button
-                type="button"
-                onClick={() => void flow.loadSamples()}
-                disabled={busy || state.sampleLoading}
-                data-testid="try-sample"
-                className="text-small text-teal underline underline-offset-4 hover:text-teal-deep disabled:opacity-60"
-              >
-                {state.sampleLoading ? `${strings.sampleLoading}…` : strings.trySample}
-              </button>
+              {/* Hidden once the student has attached their own photos, so it cannot overwrite them. */}
+              {(!anyFile || state.sampleMode) && (
+                <button
+                  type="button"
+                  onClick={() => void flow.loadSamples()}
+                  disabled={busy || state.sampleLoading}
+                  data-testid="try-sample"
+                  className="min-h-11 text-small text-teal underline underline-offset-4 hover:text-teal-deep disabled:opacity-60"
+                >
+                  {state.sampleLoading ? `${strings.sampleLoading}…` : strings.trySample}
+                </button>
+              )}
             </div>
             {state.sampleMode && (
               <p className="mt-3 mb-0 max-w-[62ch] text-small text-graphite-soft">
@@ -195,7 +206,7 @@ export default function App() {
             <button
               type="button"
               onClick={flow.startAgain}
-              className="mt-6 inline-flex min-h-12 items-center gap-2 rounded-sm bg-teal px-6 text-body font-semibold text-paper-bright hover:bg-teal-deep"
+              className="mt-6 inline-flex min-h-12 items-center gap-2 rounded-sm bg-teal px-6 text-body font-semibold text-paper-bright hover:bg-teal-deep active:bg-teal-deep"
             >
               {strings.startAgain}
               <Icon name="arrow" size={18} />
@@ -204,12 +215,12 @@ export default function App() {
         )}
       </main>
 
-      <footer className="hairline-t flex flex-wrap items-center justify-between gap-3 py-5 text-micro text-graphite-faint">
+      <footer className="hairline-t flex flex-wrap items-center justify-between gap-3 py-5 text-small text-graphite-soft">
         <span>{strings.team} · KagazReady</span>
         <button
           type="button"
           onClick={() => setDrawerOpen(true)}
-          className="text-micro text-graphite-soft underline underline-offset-4 hover:text-ink"
+          className="min-h-11 text-small text-graphite-soft underline underline-offset-4 hover:text-ink"
         >
           {strings.howItWorks}
         </button>
@@ -224,9 +235,17 @@ export default function App() {
   );
 }
 
-function LanguageSwitch({ value, onChange }: { value: Language; onChange: (l: Language) => void }) {
+function LanguageSwitch({
+  value,
+  label,
+  onChange,
+}: {
+  value: Language;
+  label: string;
+  onChange: (l: Language) => void;
+}) {
   return (
-    <div role="group" aria-label="Language" className="hairline inline-flex rounded-sm p-0.5">
+    <div role="group" aria-label={label} className="hairline inline-flex rounded-sm p-0.5">
       {LANGUAGE_OPTIONS.map((option) => {
         const active = option.code === value;
         return (
@@ -237,8 +256,10 @@ function LanguageSwitch({ value, onChange }: { value: Language; onChange: (l: La
             aria-pressed={active}
             aria-label={option.label}
             onClick={() => onChange(option.code)}
-            className={`min-h-9 min-w-10 rounded-hair px-2.5 text-small transition-colors duration-(--duration-micro) ${
-              active ? 'bg-ink text-paper-bright' : 'text-graphite hover:bg-paper-deep'
+            className={`min-h-10 min-w-11 rounded-hair px-2.5 text-small transition-colors duration-(--duration-micro) ${
+              active
+                ? 'bg-ink text-paper-bright'
+                : 'text-graphite hover:bg-paper-deep active:bg-paper-deep'
             }`}
           >
             {option.short}

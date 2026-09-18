@@ -14,15 +14,6 @@ interface ArchitectureDrawerProps {
   strings: UiStrings;
 }
 
-const SERVICES = [
-  'Amazon S3',
-  'AWS Lambda',
-  'Amazon Textract',
-  'Deterministic rules',
-  'Amazon Bedrock',
-  'Amazon DynamoDB',
-];
-
 export function ArchitectureDrawer({ open, onClose, strings }: ArchitectureDrawerProps) {
   const dialog = useRef<HTMLDialogElement>(null);
   const panel = useRef<HTMLDivElement>(null);
@@ -77,7 +68,7 @@ export function ArchitectureDrawer({ open, onClose, strings }: ArchitectureDrawe
           <button
             type="button"
             onClick={onClose}
-            className="inline-flex size-10 items-center justify-center rounded-sm text-graphite-soft hover:bg-paper-deep"
+            className="inline-flex size-11 items-center justify-center rounded-sm text-graphite-soft hover:bg-paper-deep active:bg-paper-deep"
             aria-label={strings.howItWorksClose}
           >
             <Icon name="close" size={18} />
@@ -90,7 +81,7 @@ export function ArchitectureDrawer({ open, onClose, strings }: ArchitectureDrawe
           <ol className="m-0 mt-4 list-none p-0">
             {strings.archSteps.map((step, index) => (
               <li
-                key={SERVICES[index]}
+                key={strings.archServices[index]}
                 data-step
                 className="hairline-t grid grid-cols-[2rem_1fr] gap-x-3 py-3"
               >
@@ -101,7 +92,9 @@ export function ArchitectureDrawer({ open, onClose, strings }: ArchitectureDrawe
                   {index + 1}
                 </span>
                 <div>
-                  <p className="m-0 text-small font-semibold text-ink">{SERVICES[index]}</p>
+                  <p className="m-0 text-small font-semibold text-ink">
+                    {strings.archServices[index]}
+                  </p>
                   <p className="mt-1 mb-0 text-small text-graphite">{step}</p>
                 </div>
               </li>

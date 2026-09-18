@@ -59,8 +59,8 @@
   --text-body--line-height: 1.55;
   --text-small: 0.875rem;
   --text-small--line-height: 1.5;
-  --text-micro: 0.75rem;
-  --text-micro--line-height: 1.4;
+  --text-micro: 0.8125rem;
+  --text-micro--line-height: 1.45;
 
   /* Shape */
   --radius-hair: 2px;
@@ -109,6 +109,11 @@
   }
   html[lang='gu'] .font-display {
     font-family: 'Noto Sans Gujarati', 'Spectral', serif;
+  }
+  /* Matras and nuktas need more pixels than Latin: no Indic text below 14px. */
+  html[lang='hi'] .text-micro,
+  html[lang='gu'] .text-micro {
+    font-size: 0.875rem;
   }
 
   body {
