@@ -1,7 +1,12 @@
 # Submission write-up — KagazReady
 
-**Team DiuDaman · WeMakeDevs × AWS "First Commit"**
+**Team DiuDaman · WeMakeDevs × AWS "First Commit" (Bharat Builds Tour, 17–20 Sept 2026)**
+**Track:** Ship It — deployed on AWS with a public URL (serverless: Lambda + API Gateway; hosting:
+Amplify; data: S3 + DynamoDB; plus Textract, Bedrock, CloudWatch, SAM). One submission is
+considered for Ship It, Build It and Best UI; the interface was built for the Best UI bar too.
 **Live:** https://main.d109ovvm872kui.amplifyapp.com
+**Repository:** https://github.com/navneet-cerecode/kagazready
+**Demo video:** _YouTube link — under three minutes, public or unlisted (to add at submission)._
 **Tagline:** Check the paperwork before the portal checks you.
 
 ## The problem
@@ -76,13 +81,37 @@ fonts, a 14px floor, `lang` on every translated span.
 USD 0.00 billed to date; all usage inside the free tier. Roughly USD 0.005 per complete demo
 journey. A daily cap and API throttling make the worst case under USD 1 a day.
 
+## What we learned
+
+The four days left us knowing things we did not on Thursday, most of them found the hard way:
+
+- **Textract confidence is nearly bimodal on printed text.** Blur and low contrast barely move it
+  (a heavily blurred number still read at 97.9%); past a point the line vanishes entirely. Only
+  glyph _ambiguity_ — a scratched digit — produced a genuine 62% reading. Calibrating a fixture
+  against a real service taught us more about OCR than any documentation.
+- **CloudFormation passes an unset parameter as an empty string.** Two of four Lambdas failed on
+  every invocation in production while 176 local tests passed. Optional configuration must treat
+  empty and absent as the same thing — and the error path must not depend on the configuration it
+  is reporting on.
+- **SAM's esbuild builder and npm workspaces do not mix.** Hoisted `esbuild` is invisible to it,
+  and workspace symlinks 404 on the registry in its scratch directory. Bundling ourselves and
+  letting SAM zip a directory was simpler and reproducible.
+- **Presigned S3 POST policies are the right shape for document uploads:** the API never touches
+  file bytes, and the policy pins key, type and size for the browser.
+- **A brand-new AWS account can have every Bedrock quota at zero**, which is neither a credit
+  nor a model-access problem. Designing the model as decoration on a decision already made meant
+  that discovery cost us nothing but a support case.
+- **A PowerShell zip is not a zip Amplify can serve** (backslash entry names). Python's `zipfile`
+  was the fix, and now the deploy is a script anyone can run.
+
 ## Honest limitations
 
 Bedrock off pending quota; Indic copy not native-reviewed; English document labels only; one
 scholarship template; no thumbnail of the uploaded photo yet. `docs/limitations.md`.
 
-## Built with
+## Built with (AI coding tools, as the rules ask)
 
-Claude Code (Claude Opus 5) as pair programmer, directed by the team; Impeccable and Emil Kowalski
-skill collections for design and motion review. Disclosure in `README.md`, tools in
-`ATTRIBUTIONS.md`. MIT licence.
+Claude Code (Claude Opus 5) as pair programmer for the whole build, directed by the team;
+Impeccable and Emil Kowalski skill collections (Claude Code skills) for design direction,
+critique, audit and motion review. Everything else is listed with its licence in
+`ATTRIBUTIONS.md`. The project's own code is MIT.

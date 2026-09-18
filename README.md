@@ -10,7 +10,9 @@ evidence-backed correction list in English, Hindi or Gujarati.
 
 - **Live:** https://main.d109ovvm872kui.amplifyapp.com — the "Try the sample set" link runs the
   whole journey on synthetic documents, so nothing personal is needed to see it work.
-- **Team:** DiuDaman · WeMakeDevs × AWS "First Commit" hackathon.
+- **Team:** DiuDaman · WeMakeDevs × AWS "First Commit" (Bharat Builds Tour, 17–20 Sept 2026).
+- **Track:** Ship It — deployed on AWS with a public URL. Also in the running for Best UI, as every
+  submission is.
 
 KagazReady is **not** a government service, is not affiliated with the National Scholarship Portal,
 does not evaluate eligibility, does not check authenticity, does not submit applications, and does
@@ -133,8 +135,16 @@ Aadhaar. [PRIVACY.md](PRIVACY.md) and [SECURITY.md](SECURITY.md) say the rest;
 - [docs/cost-estimate.md](docs/cost-estimate.md) · [docs/aws-cleanup.md](docs/aws-cleanup.md)
 - [docs/user-research.md](docs/user-research.md) — how the problem was identified, honestly scoped
 - [docs/demo-script.md](docs/demo-script.md) · [docs/judge-questions.md](docs/judge-questions.md)
-- [docs/submission-writeup.md](docs/submission-writeup.md) · [docs/limitations.md](docs/limitations.md)
+- [docs/submission-writeup.md](docs/submission-writeup.md) · [docs/limitations.md](docs/limitations.md) · [docs/builder-center-blog.md](docs/builder-center-blog.md)
 - [VERIFICATION.md](VERIFICATION.md) · `tests.json` · `progress.md`
+
+## What we learned
+
+Textract's confidence is nearly bimodal on printed text (only glyph ambiguity lowers it);
+CloudFormation hands an unset parameter to Lambda as an empty string; SAM's esbuild builder cannot
+see a workspace-hoisted esbuild; a new AWS account can have every Bedrock quota at zero; PowerShell's
+`Compress-Archive` produces a zip Amplify cannot serve. Each one is written up, with the fix, in
+[docs/submission-writeup.md](docs/submission-writeup.md#what-we-learned) and `progress.md`.
 
 ## AI disclosure
 

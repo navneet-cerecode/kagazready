@@ -309,6 +309,23 @@ per-request, and S3 holds a few kilobytes that expire within a day.
   say so.
 - Readiness review only. No eligibility evaluation, no authenticity checking, no submission.
 
+## Hackathon requirements (from wemakedevs.org/aws/first-commit, read 2026-09-18)
+
+- **Track: Ship It** (deployed on AWS with a URL). One submission is considered for Ship It,
+  Build It and Best UI. Ship It scores architecture and cost decisions; Best UI scores design and
+  usability.
+- Judging criteria: idea and impact; built on AWS; **learning** (say what was learned — now a
+  section in the write-up and README); execution (does it work); the **demo video**.
+- Submission = public repository + YouTube demo video under three minutes (public or unlisted,
+  must _show_ AWS) + short write-up (problem, build, where AWS fits, AI tools used). Submitted once
+  per team on the hackathon's form before the Sunday 20 Sept deadline (exact hour "still being
+  finalised" on the schedule page — check it).
+- Repository history must match the event dates: first commit 2026-09-17, after kickoff. ✓
+- Optional: a blog on AWS Builder Center linked in the submission (top-5 blog prize) —
+  `docs/builder-center-blog.md` is the draft; the team publishes it.
+- Each member needs a WeMakeDevs account and an AWS Builder Center profile with student
+  verification; the team leader claims the USD 100 team credits via the form on the page.
+
 ## Next action
 
 1. User runs `aws login`; then:

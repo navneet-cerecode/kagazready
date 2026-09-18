@@ -6,6 +6,33 @@ against this URL in three viewports, so the demo does not depend on luck.
 
 **URL:** https://main.d109ovvm872kui.amplifyapp.com
 
+## The video (what the judges actually see)
+
+The rules: **under three minutes, uploaded to YouTube (public or unlisted), and it must show AWS —
+naming it in the write-up is not enough.** There is no live demo; anything not in the video does
+not count. Record the screen at phone width with the narration below, then cut in the console
+shots at the marked points. Check the link opens in a signed-out browser before submitting.
+
+Shot list:
+
+| Time | On screen                                                                                                                  | Why                                     |
+| ---- | -------------------------------------------------------------------------------------------------------------------------- | --------------------------------------- |
+| 0:00 | The compose sheet, narration of the problem                                                                                | Idea and impact                         |
+| 0:30 | Sample set loads; **Check these documents**                                                                                | Execution                               |
+| 0:40 | **Console cut 1:** S3 bucket → `uploads/<id>/` with three objects (~4 s)                                                   | AWS shown, not named                    |
+| 0:45 | **Console cut 2:** CloudWatch → `/kagazready/kagazready/analyses` log line `analysis decided … status=needs_review` (~4 s) | Decision made by code, evidence in logs |
+| 0:50 | Needs review; open both marks; masked value and rule id                                                                    | Execution, honesty                      |
+| 1:25 | Language switch to हिन्दी                                                                                                  | Impact (persona), Best UI               |
+| 1:40 | Replace bank proof → No issues found                                                                                       | The memorable moment                    |
+| 2:05 | Delete everything → Deleted; **Console cut 3:** the S3 prefix is empty (~3 s)                                              | Privacy claim proven                    |
+| 2:20 | **How AWS powers this** drawer, then **Console cut 4:** CloudFormation stack resources (~5 s)                              | Architecture (Ship It scoring)          |
+| 2:40 | One sentence on what we learned (Textract confidence; empty CloudFormation parameters)                                     | Learning criterion                      |
+| 2:55 | Team, track, URL on screen                                                                                                 |                                         |
+
+Console views to have open in tabs before recording (ap-south-1): S3 → the upload bucket;
+CloudWatch → Log groups → `/kagazready/kagazready/analyses`; CloudFormation → stack `kagazready`
+→ Resources. Never show the account id or the Billing pages.
+
 ## 0:00 — The sheet
 
 > "This is KagazReady. A student uploads the three documents a scholarship portal asks for, and it
