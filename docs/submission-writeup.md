@@ -7,6 +7,7 @@ considered for Ship It, Build It and Best UI; the interface was built for the Be
 **Live:** https://main.d109ovvm872kui.amplifyapp.com
 **Repository:** https://github.com/navneet-cerecode/kagazready
 **Demo video:** _YouTube link — under three minutes, public or unlisted (to add at submission)._
+**Blog (AWS Builder Center):** https://builder.aws.com/content/3JVSGeqFIuVHSRysXPRuzpuHtQ3/we-built-a-scholarship-paperwork-checker-in-four-days-textract-taught-us-the-most
 **Tagline:** Check the paperwork before the portal checks you.
 
 ## The problem

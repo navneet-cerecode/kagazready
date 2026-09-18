@@ -1,9 +1,11 @@
 # Blog draft for AWS Builder Center
 
 The hackathon awards its top five blogs, and the ask is specific: _the problem, the stack, what
-fought back_, published on AWS Builder Center and linked in the submission. This is the draft;
-publish it under your own Builder ID (nothing here should be posted by anyone but the team) and
-paste the link into the submission form.
+fought back_, published on AWS Builder Center and linked in the submission. Published by the team on
+2026-09-18 under their own Builder ID:
+https://builder.aws.com/content/3JVSGeqFIuVHSRysXPRuzpuHtQ3/we-built-a-scholarship-paperwork-checker-in-four-days-textract-taught-us-the-most
+
+This file is the source text of that post.
 
 ---
 

@@ -13,6 +13,8 @@ evidence-backed correction list in English, Hindi or Gujarati.
 - **Team:** DiuDaman · WeMakeDevs × AWS "First Commit" (Bharat Builds Tour, 17–20 Sept 2026).
 - **Track:** Ship It — deployed on AWS with a public URL. Also in the running for Best UI, as every
   submission is.
+- **Blog:** [We built a scholarship paperwork checker in four days. Textract taught us the
+  most.](https://builder.aws.com/content/3JVSGeqFIuVHSRysXPRuzpuHtQ3/we-built-a-scholarship-paperwork-checker-in-four-days-textract-taught-us-the-most) on AWS Builder Center.
 
 KagazReady is **not** a government service, is not affiliated with the National Scholarship Portal,
 does not evaluate eligibility, does not check authenticity, does not submit applications, and does

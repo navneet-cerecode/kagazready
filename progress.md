@@ -349,8 +349,9 @@ per-request, and S3 holds a few kilobytes that expire within a day.
 ## Next action
 
 1. Team: record the three-minute video (`docs/demo-script.md` shot list), upload to YouTube,
-   publish the Builder Center blog (`docs/builder-center-blog.md`), submit the form before the
-   Sunday deadline. Add the video link to `docs/submission-writeup.md` and `README.md`.
+   submit the form before the Sunday deadline. Add the video link to
+   `docs/submission-writeup.md` and `README.md`. The Builder Center blog is published (link in
+   the write-up and README).
 2. Ponytail review once the user installs the plugin
    (`/plugin marketplace add DietrichGebert/ponytail`, `/plugin install ponytail@ponytail`).
 3. If the support case raises the Bedrock quotas: redeploy with
