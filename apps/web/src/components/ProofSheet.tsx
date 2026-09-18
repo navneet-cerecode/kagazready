@@ -102,7 +102,7 @@ function SheetRow({ index, documentType, state, strings, onFile, disabled }: She
           {!uploading && (
             <label
               htmlFor={inputId}
-              className={`text-small inline-flex cursor-pointer items-center gap-1.5 min-h-11 rounded-sm border border-line-strong px-3 text-ink transition-colors duration-(--duration-micro) hover:bg-paper-deep active:bg-paper-deep has-[:focus-visible]:ring-focus ${disabled ? 'pointer-events-none opacity-50' : ''}`}
+              className={`text-small inline-flex cursor-pointer items-center gap-1.5 min-h-11 rounded-sm border border-line-strong px-3 py-2.5 text-ink transition-colors duration-(--duration-micro) hover:bg-paper-deep active:bg-paper-deep has-[:focus-visible]:ring-focus ${disabled ? 'pointer-events-none opacity-50' : ''}`}
             >
               <Icon name={slot.file ? 'refresh' : 'plus'} size={16} />
               {slot.file ? strings.replacePhoto : strings.addPhoto}

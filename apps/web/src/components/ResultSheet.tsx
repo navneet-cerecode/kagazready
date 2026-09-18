@@ -146,7 +146,7 @@ export function ResultSheet({
           onClick={onUseCorrectedSample}
           disabled={busy}
           data-testid="use-corrected-sample"
-          className="mt-5 inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-sm bg-teal px-5 text-body font-semibold text-paper-bright transition-colors duration-(--duration-micro) hover:bg-teal-deep active:bg-teal-deep disabled:opacity-60 sm:w-auto"
+          className="mt-5 inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-sm bg-teal px-5 py-3 text-body font-semibold text-paper-bright transition-colors duration-(--duration-micro) hover:bg-teal-deep active:bg-teal-deep disabled:opacity-60 sm:w-auto"
         >
           <Icon name="refresh" size={18} />
           {strings.useCorrectedSample}
@@ -324,7 +324,7 @@ function FindingMark({ finding, language, strings, busy, present, onReplace }: F
       {/* Plain words first: it is the sentence a parent or a first-time reader needs. */}
       {explanation && (
         <div className="mt-3 rounded-sm bg-paper-bright px-3 py-2">
-          <p className="m-0 text-small text-graphite">
+          <p className="m-0 max-w-[62ch] text-small text-graphite">
             <span className="block text-micro font-semibold text-graphite-soft">
               {explanation.source === 'fallback' ? strings.plainNoteFallback : strings.plainNote}
             </span>
@@ -411,7 +411,7 @@ function DocumentControl({
       />
       <label
         htmlFor={id}
-        className={`text-small inline-flex min-h-11 cursor-pointer items-center gap-1.5 rounded-sm border border-line-strong px-3 text-ink transition-colors duration-(--duration-micro) hover:bg-paper-deep active:bg-paper-deep has-[:focus-visible]:ring-focus ${disabled ? 'pointer-events-none opacity-50' : ''}`}
+        className={`text-small inline-flex min-h-11 cursor-pointer items-center gap-1.5 rounded-sm border border-line-strong px-3 py-2.5 text-ink transition-colors duration-(--duration-micro) hover:bg-paper-deep active:bg-paper-deep has-[:focus-visible]:ring-focus ${disabled ? 'pointer-events-none opacity-50' : ''}`}
       >
         <Icon name={present ? 'refresh' : 'plus'} size={16} />
         {verb}: {label}
@@ -447,7 +447,7 @@ function DeleteControl({
               onClick={onDelete}
               disabled={busy}
               data-testid="confirm-delete"
-              className="inline-flex min-h-11 items-center gap-2 rounded-sm bg-red px-4 text-small font-semibold text-paper-bright hover:bg-red-ink active:bg-red-ink disabled:opacity-60"
+              className="inline-flex min-h-11 items-center gap-2 rounded-sm bg-red px-4 py-2.5 text-small font-semibold text-paper-bright hover:bg-red-ink active:bg-red-ink disabled:opacity-60"
             >
               <Icon name="trash" size={16} />
               {strings.deleteConfirm}
@@ -467,7 +467,7 @@ function DeleteControl({
             onClick={() => setConfirming(true)}
             disabled={busy}
             data-testid="delete"
-            className="inline-flex min-h-11 items-center gap-2 rounded-sm border border-red px-4 text-small font-semibold text-red-ink hover:bg-red-tint active:bg-red-tint disabled:opacity-60"
+            className="inline-flex min-h-11 items-center gap-2 rounded-sm border border-red px-4 py-2.5 text-small font-semibold text-red-ink hover:bg-red-tint active:bg-red-tint disabled:opacity-60"
           >
             <Icon name="trash" size={16} />
             {strings.deleteAction}

@@ -126,7 +126,7 @@ export default function App() {
                 onClick={() => void flow.runCheck()}
                 disabled={!anyFile || busy}
                 data-testid="check"
-                className="inline-flex min-h-12 items-center justify-center gap-2 rounded-sm bg-teal px-6 text-body font-semibold text-paper-bright transition-colors duration-(--duration-micro) hover:bg-teal-deep active:bg-teal-deep disabled:cursor-not-allowed disabled:border disabled:border-line-strong disabled:bg-paper-deep disabled:text-graphite-soft"
+                className="inline-flex min-h-12 items-center justify-center gap-2 rounded-sm bg-teal px-6 py-3 text-body font-semibold text-paper-bright transition-colors duration-(--duration-micro) hover:bg-teal-deep active:bg-teal-deep disabled:cursor-not-allowed disabled:border disabled:border-line-strong disabled:bg-paper-deep disabled:text-graphite-soft"
               >
                 {strings.checkDocuments}
                 <Icon name="arrow" size={18} />
@@ -150,8 +150,12 @@ export default function App() {
               </p>
             )}
 
-            <p className="hairline-t mt-8 pt-4 text-small text-graphite-soft">{strings.notThis}</p>
-            <p className="mt-2 mb-0 text-small text-graphite-soft">{strings.requirementsVary}</p>
+            <p className="hairline-t mt-8 max-w-[62ch] pt-4 text-small text-graphite-soft">
+              {strings.notThis}
+            </p>
+            <p className="mt-2 mb-0 max-w-[62ch] text-small text-graphite-soft">
+              {strings.requirementsVary}
+            </p>
           </section>
         )}
 
@@ -193,7 +197,9 @@ export default function App() {
                 onUseCorrectedSample={() => void flow.replaceWithCorrectedSample()}
                 onDelete={() => void flow.removeEverything()}
               />
-              <p className="mt-2 mb-0 text-small text-graphite-soft">{strings.requirementsVary}</p>
+              <p className="mt-2 mb-0 max-w-[62ch] text-small text-graphite-soft">
+                {strings.requirementsVary}
+              </p>
             </section>
           )}
 
@@ -206,7 +212,7 @@ export default function App() {
             <button
               type="button"
               onClick={flow.startAgain}
-              className="mt-6 inline-flex min-h-12 items-center gap-2 rounded-sm bg-teal px-6 text-body font-semibold text-paper-bright hover:bg-teal-deep active:bg-teal-deep"
+              className="mt-6 inline-flex min-h-12 items-center gap-2 rounded-sm bg-teal px-6 py-3 text-body font-semibold text-paper-bright hover:bg-teal-deep active:bg-teal-deep"
             >
               {strings.startAgain}
               <Icon name="arrow" size={18} />
@@ -256,7 +262,7 @@ function LanguageSwitch({
             aria-pressed={active}
             aria-label={option.label}
             onClick={() => onChange(option.code)}
-            className={`min-h-10 min-w-11 rounded-hair px-2.5 text-small transition-colors duration-(--duration-micro) ${
+            className={`min-h-11 min-w-11 rounded-hair px-2.5 py-2 text-small transition-colors duration-(--duration-micro) ${
               active
                 ? 'bg-ink text-paper-bright'
                 : 'text-graphite hover:bg-paper-deep active:bg-paper-deep'
