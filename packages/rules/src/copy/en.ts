@@ -68,7 +68,7 @@ export const EN: LanguageCopy = {
     name_minor_difference: {
       title: 'Small difference in the name between documents',
       reason:
-        'The name on your {outlierDocumentTypes} reads "{outlierName}", while your {referenceDocumentTypes} reads "{referenceName}". The difference is small — an initial or a spelling variant.',
+        'The name on your {outlierDocumentTypes} reads "{outlierName}", while on your {referenceDocumentTypes} it is "{referenceName}". The difference is small — an initial or a spelling variant.',
       suggestedAction:
         'Decide which spelling your application will use, and make sure the documents you submit use it too. If a document is genuinely wrong, ask the office that issued it to correct it.',
     },
@@ -76,7 +76,7 @@ export const EN: LanguageCopy = {
     name_material_difference: {
       title: 'The name does not match between documents',
       reason:
-        'The name on your {outlierDocumentTypes} reads "{outlierName}", while your {referenceDocumentTypes} reads "{referenceName}". A portal check is likely to read these as two different people.',
+        'The name on your {outlierDocumentTypes} reads "{outlierName}", while on your {referenceDocumentTypes} it is "{referenceName}". A portal check is likely to read these as two different people.',
       suggestedAction:
         'Submit a {outlierDocumentTypes} whose name matches your other documents, or ask the office that issued it to correct the name before you apply.',
     },
