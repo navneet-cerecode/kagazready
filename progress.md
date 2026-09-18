@@ -55,6 +55,11 @@ Claude Code session.
   name-rule grammar); GSAP no longer warns on a clean sheet. Playwright 18/18 on the public URL
   after the redeploy; the retry path re-checked live with curl (400, 400, 404).
 
+- Later on 2026-09-18 (stack update + Amplify job 6): an omitted middle name is now a minor
+  difference; the sample IFSC is `SYNB0234567` (old value read at 89.5% vs the 88% threshold);
+  both bank-proof samples regenerated and re-measured live; Playwright 18/18 on the public URL;
+  the upload bucket emptied of stray synthetic runs through the app's own DELETE route.
+
 Remaining: Ponytail review (plugin not installed); the AWS Budget (command in
 `docs/cost-estimate.md`, needs the team's alert email); the demo video and submission form (team);
 Bedrock smoke test if the quota case succeeds.

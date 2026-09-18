@@ -405,7 +405,7 @@
       "description": "Playwright: load app, run Needs Review sample, verify masked evidence, replace the problem document, reach No issues found, delete, confirm it cannot be reopened.",
       "type": "e2e",
       "status": "passing",
-      "evidence": "E2E_BASE_URL=https://main.d109ovvm872kui.amplifyapp.com npx playwright test -> 15 passed in 26.4s across desktop-chromium, mobile-chromium (Pixel 7) and reduced-motion projects. Each project ran the full journey against real S3/Textract: Needs review with masked evidence -> corrected bank proof -> No issues found -> delete -> API 404. Also: PDF refused before upload, hi/gu switching, drawer, CLS < 0.1 and no console errors. Re-run 2026-09-18 after the audit fixes (stack update + Amplify job 5): 18 passed in 20.0s (3 projects × 6, including the new focus-visibility test).",
+      "evidence": "E2E_BASE_URL=https://main.d109ovvm872kui.amplifyapp.com npx playwright test -> 15 passed in 26.4s across desktop-chromium, mobile-chromium (Pixel 7) and reduced-motion projects. Each project ran the full journey against real S3/Textract: Needs review with masked evidence -> corrected bank proof -> No issues found -> delete -> API 404. Also: PDF refused before upload, hi/gu switching, drawer, CLS < 0.1 and no console errors. Re-run 2026-09-18 after the audit fixes (stack update + Amplify job 5): 18 passed in 20.0s (3 projects × 6, including the new focus-visibility test). Amplify job 6 (name rule + regenerated samples): 18 passed in 40.4s.",
       "lastRun": "2026-09-18"
     },
     {
