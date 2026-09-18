@@ -17,7 +17,16 @@ API Gateway, DynamoDB, S3, Amplify, CloudWatch, CloudFormation). Free-tier allow
 Textract 82 of 1,000 free pages this month, Lambda 7 of 1,000,000 requests. **Total billed to
 date: USD 0.00.** The budget rules above still apply as written; the credits do not raise them.
 
-A cost budget with email alerts was created in the Billing console at the thresholds above.
+**No AWS Budget exists yet** (checked with `aws budgets describe-budgets` on 2026-09-18 during
+the audit; an earlier version of this page said one had been created — it had not). The thresholds
+above are therefore policy, not alarms, until one is created:
+
+```bash
+aws budgets create-budget --account-id <id> --budget '{"BudgetName":"kagazready","BudgetLimit":{"Amount":"23","Unit":"USD"},"TimeUnit":"MONTHLY","BudgetType":"COST"}' \n  --notifications-with-subscribers '[{"Notification":{"NotificationType":"ACTUAL","ComparisonOperator":"GREATER_THAN","Threshold":43,"ThresholdType":"PERCENTAGE"},"Subscribers":[{"SubscriptionType":"EMAIL","Address":"<team email>"}]},{"Notification":{"NotificationType":"ACTUAL","ComparisonOperator":"GREATER_THAN","Threshold":78,"ThresholdType":"PERCENTAGE"},"Subscribers":[{"SubscriptionType":"EMAIL","Address":"<team email>"}]}]'
+```
+
+(43 % and 78 % of USD 23 are the USD 10 and USD 18 thresholds; the budget itself is the USD 23
+boundary. The first two budgets per account are free.)
 
 ## Unit prices used (ap-south-1 list prices, checked 2026-09-17)
 
@@ -61,7 +70,7 @@ Total: 82 Textract pages inside the 1,000-page free tier; **USD 0.00 billed.**
 - API throttling 10 rps / burst 20.
 - Bedrock output capped at 700 tokens per call, 8 findings per call, 6-second timeout.
 - No continuously billed resource exists. Idle cost is the S3 storage of a few kilobytes that
-  expire within a day.
+  expire within a day or two.
 
 ## Projection for judging week
 

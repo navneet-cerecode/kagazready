@@ -86,7 +86,7 @@ the mark itself). The marks withdraw. The status token reads **No issues found**
 Scroll to **Finished?** Tap **Delete everything**, confirm.
 
 > "That removed the result and every uploaded object immediately. Even if nobody pressed this, the
-> files expire within a day and the result within six hours."
+> files expire within a day or two and the result within six hours."
 
 ## 2:30 — How AWS powers this
 

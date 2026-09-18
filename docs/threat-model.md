@@ -111,6 +111,10 @@ The analysis ID is the only capability. There are no accounts.
   pinned in the S3 policy; after upload, `HeadObject` re-checks size and type against what S3
   actually stored. A file that lies about its type reaches Textract, which rejects it; the analysis
   fails safely with a generic error.
+- **A failed run is not sticky.** `handlers/analyses.ts` deletes its own `processing` item when
+  the pipeline throws, and takes over a `processing` item older than the function timeout, so a
+  missing upload, a Textract outage or the daily cap cannot lock an analysis id out until the TTL
+  (found live during the 2026-09-18 audit: every retry answered 409 for six hours).
 - **Prompt injection through the image.** Text in a document does reach Bedrock, but only as
   _masked finding values_, and Bedrock's output cannot change anything that matters: the schema
   (`packages/contracts/src/bedrock.ts`) accepts only a plain-language note per known finding id,
@@ -145,8 +149,12 @@ The analysis ID is the only capability. There are no accounts.
 ### T8 — Blast radius inside AWS
 
 - Four functions, four roles, each scoped to its routes (`services/template.yaml`): the function
-  that spends on Textract cannot delete; the function that deletes cannot call Textract; the health
-  check has no permissions beyond its own log group.
+  that spends on Textract cannot delete uploads (it may delete only its own unfinished table item,
+  so a failed run can be retried); the function that deletes cannot call Textract; the health check
+  has no permissions beyond its own log group.
+- `AnalysesFunction` holds `s3:ListBucket` restricted to the `uploads/` prefix. Without it S3
+  answers `HeadObject` on a missing key with 403 instead of 404, and "please upload that document
+  again" surfaced as a 500 on the deployed stack while the mocked tests passed.
 - `textract:DetectDocumentText` is `Resource: '*'` because Textract does not support resource
   scoping for it. `bedrock:InvokeModel` spans regions because cross-region inference profiles
   (`apac.*`) route to other regions. Both are read-only, metered actions.

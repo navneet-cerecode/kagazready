@@ -28,7 +28,7 @@ never lowered to fit an image. `progress.md` ("Textract confidence is close to b
 **"What happens to the documents?"**
 Straight from the browser to a private bucket under a presigned policy (key, type, size pinned,
 120-second expiry). Textract reads them; the text lives in Lambda memory only. The result is stored
-masked with a six-hour TTL that the code also enforces; objects expire in a day; Delete removes
+masked with a six-hour TTL that the code also enforces; objects expire within a day or two; Delete removes
 both immediately. Logs are digit-redacted and kept seven days. `PRIVACY.md`, `docs/threat-model.md`.
 
 **"Is the account number ever stored in full?"**

@@ -9,6 +9,14 @@
   },
   "checks": [
     {
+      "id": "api-retry-after-failure",
+      "description": "A failed run (missing upload, Textract outage, daily cap) does not leave the analysis id stuck in processing: the same id can be retried, a genuinely running analysis still answers 409, and a processing item older than the function timeout is taken over.",
+      "type": "backend",
+      "status": "passing",
+      "evidence": "npm run test -w @kagazready/api -- 63 tests passed (4 new). Found live during the 2026-09-18 read-only audit: after a failed POST /analyses every retry, GET and PUT answered 409 for the TTL. Fix in handlers/analyses.ts (rollback + stale takeover) and template.yaml (dynamodb:DeleteItem, prefix-scoped s3:ListBucket so a missing object is 404 not 403/500). Live after the redeploy (2026-09-18): POST /analyses with a never-uploaded key -> 400 \"could not be found\" (was 500); the same id again -> 400 again (was 409); GET -> 404, nothing left in DynamoDB.",
+      "lastRun": "2026-09-18"
+    },
+    {
       "id": "rules-name-exact",
       "description": "Identical normalized names across three documents produce no name finding.",
       "type": "unit",
@@ -165,7 +173,7 @@
       "description": "POST /uploads returns a presigned POST with randomized key, restricted prefix, short expiry, content-type condition, and content-length range.",
       "type": "backend",
       "status": "passing",
-      "evidence": "npm run test -w @kagazready/api -- 59 tests passed (2 files)",
+      "evidence": "npm run test -w @kagazready/api -- 63 tests passed (2 files)",
       "lastRun": "2026-09-18"
     },
     {
@@ -173,7 +181,7 @@
       "description": "An unsupported content type is rejected with 415 before any presign is issued.",
       "type": "backend",
       "status": "passing",
-      "evidence": "npm run test -w @kagazready/api -- 59 tests passed (2 files)",
+      "evidence": "npm run test -w @kagazready/api -- 63 tests passed (2 files)",
       "lastRun": "2026-09-18"
     },
     {
@@ -181,7 +189,7 @@
       "description": "A declared size above 5 MB is rejected with 413.",
       "type": "backend",
       "status": "passing",
-      "evidence": "npm run test -w @kagazready/api -- 59 tests passed (2 files)",
+      "evidence": "npm run test -w @kagazready/api -- 63 tests passed (2 files)",
       "lastRun": "2026-09-18"
     },
     {
@@ -189,7 +197,7 @@
       "description": "An object key outside the analysis prefix is rejected and never sent to Textract.",
       "type": "backend",
       "status": "passing",
-      "evidence": "npm run test -w @kagazready/api -- 59 tests passed (2 files)",
+      "evidence": "npm run test -w @kagazready/api -- 63 tests passed (2 files)",
       "lastRun": "2026-09-18"
     },
     {
@@ -197,7 +205,7 @@
       "description": "A referenced S3 object that does not exist produces a safe 400/409, not a 500.",
       "type": "backend",
       "status": "passing",
-      "evidence": "npm run test -w @kagazready/api -- 59 tests passed (2 files)",
+      "evidence": "npm run test -w @kagazready/api -- 63 tests passed (2 files)",
       "lastRun": "2026-09-18"
     },
     {
@@ -205,7 +213,7 @@
       "description": "A Textract error produces a safe error response with a correlation ID and no internal detail.",
       "type": "backend",
       "status": "passing",
-      "evidence": "npm run test -w @kagazready/api -- 59 tests passed (2 files)",
+      "evidence": "npm run test -w @kagazready/api -- 63 tests passed (2 files)",
       "lastRun": "2026-09-18"
     },
     {
@@ -213,7 +221,7 @@
       "description": "A Bedrock failure preserves the deterministic findings and falls back to predefined English explanations.",
       "type": "backend",
       "status": "passing",
-      "evidence": "npm run test -w @kagazready/api -- 59 tests passed (2 files)",
+      "evidence": "npm run test -w @kagazready/api -- 63 tests passed (2 files)",
       "lastRun": "2026-09-18"
     },
     {
@@ -221,7 +229,7 @@
       "description": "Bedrock output failing schema validation is discarded; deterministic results and fallback explanations are returned.",
       "type": "backend",
       "status": "passing",
-      "evidence": "npm run test -w @kagazready/api -- 59 tests passed (2 files)",
+      "evidence": "npm run test -w @kagazready/api -- 63 tests passed (2 files)",
       "lastRun": "2026-09-18"
     },
     {
@@ -229,7 +237,7 @@
       "description": "GET on an expired or unknown analysis ID returns 404 with a safe message.",
       "type": "backend",
       "status": "passing",
-      "evidence": "npm run test -w @kagazready/api -- 59 tests passed; also verified live (unknown id -> 404).",
+      "evidence": "npm run test -w @kagazready/api -- 63 tests passed; also verified live (unknown id -> 404).",
       "lastRun": "2026-09-18"
     },
     {
@@ -237,7 +245,7 @@
       "description": "DELETE removes the DynamoDB item and every S3 object under the analysis prefix; a subsequent GET returns 404.",
       "type": "backend",
       "status": "passing",
-      "evidence": "npm run test -w @kagazready/api -- 59 tests passed (2 files)",
+      "evidence": "npm run test -w @kagazready/api -- 63 tests passed (2 files)",
       "lastRun": "2026-09-18"
     },
     {
@@ -245,7 +253,7 @@
       "description": "A repeated analysis creation with the same idempotency key does not double-charge Textract.",
       "type": "backend",
       "status": "passing",
-      "evidence": "npm run test -w @kagazready/api -- 59 tests passed (2 files)",
+      "evidence": "npm run test -w @kagazready/api -- 63 tests passed (2 files)",
       "lastRun": "2026-09-18"
     },
     {
@@ -253,7 +261,7 @@
       "description": "Once the daily analysis cap is reached, new analyses are refused with a clear capacity message and no AWS spend.",
       "type": "backend",
       "status": "passing",
-      "evidence": "npm run test -w @kagazready/api -- 59 tests passed (2 files)",
+      "evidence": "npm run test -w @kagazready/api -- 63 tests passed (2 files)",
       "lastRun": "2026-09-18"
     },
     {
@@ -261,7 +269,7 @@
       "description": "No error response exposes stack traces, account IDs, bucket names, or credentials.",
       "type": "backend",
       "status": "passing",
-      "evidence": "59 mocked-client tests, plus live: unknown analysis -> 404 with our error shape and a correlation ID; malformed id -> 400. No internal detail in either body.",
+      "evidence": "63 mocked-client tests, plus live: unknown analysis -> 404 with our error shape and a correlation ID; malformed id -> 400. No internal detail in either body.",
       "lastRun": "2026-09-18"
     },
     {
@@ -269,7 +277,7 @@
       "description": "GET /health returns service liveness without credentials, account IDs, stack traces, or unnecessary resource names.",
       "type": "backend",
       "status": "passing",
-      "evidence": "59 mocked-client tests, plus live: GET https://qev138fuyk.execute-api.ap-south-1.amazonaws.com/prod/health -> 200 with templateVersion 1.0.0 and no bucket/table/region/ARN in the body.",
+      "evidence": "63 mocked-client tests, plus live: GET https://qev138fuyk.execute-api.ap-south-1.amazonaws.com/prod/health -> 200 with templateVersion 1.0.0 and no bucket/table/region/ARN in the body.",
       "lastRun": "2026-09-18"
     },
     {
@@ -277,7 +285,7 @@
       "description": "First load shows the language choice and the upload checklist with no fabricated data.",
       "type": "frontend",
       "status": "passing",
-      "evidence": "npm run test -w @kagazready/web -- 20 tests passed (Vitest + Testing Library, API client mocked, fixtures built from the real rule engine)",
+      "evidence": "npm run test -w @kagazready/web -- 21 tests passed (Vitest + Testing Library, API client mocked, fixtures built from the real rule engine)",
       "lastRun": "2026-09-18"
     },
     {
@@ -285,7 +293,7 @@
       "description": "Client-side rejection of wrong type, oversized file, and a fourth document, each with a clear reason.",
       "type": "frontend",
       "status": "passing",
-      "evidence": "npm run test -w @kagazready/web -- 20 tests passed (Vitest + Testing Library, API client mocked, fixtures built from the real rule engine)",
+      "evidence": "npm run test -w @kagazready/web -- 21 tests passed (Vitest + Testing Library, API client mocked, fixtures built from the real rule engine)",
       "lastRun": "2026-09-18"
     },
     {
@@ -293,7 +301,7 @@
       "description": "Processing state communicates real stages without a fake percentage.",
       "type": "frontend",
       "status": "passing",
-      "evidence": "npm run test -w @kagazready/web -- 20 tests passed (Vitest + Testing Library, API client mocked, fixtures built from the real rule engine)",
+      "evidence": "npm run test -w @kagazready/web -- 21 tests passed (Vitest + Testing Library, API client mocked, fixtures built from the real rule engine)",
       "lastRun": "2026-09-18"
     },
     {
@@ -301,7 +309,7 @@
       "description": "Incomplete status renders the missing-document checklist.",
       "type": "frontend",
       "status": "passing",
-      "evidence": "npm run test -w @kagazready/web -- 20 tests passed (Vitest + Testing Library, API client mocked, fixtures built from the real rule engine)",
+      "evidence": "npm run test -w @kagazready/web -- 21 tests passed (Vitest + Testing Library, API client mocked, fixtures built from the real rule engine)",
       "lastRun": "2026-09-18"
     },
     {
@@ -309,7 +317,7 @@
       "description": "Needs review renders each finding with masked evidence, reason, suggested action, rule ID, and deterministic origin.",
       "type": "frontend",
       "status": "passing",
-      "evidence": "npm run test -w @kagazready/web -- 20 tests passed (Vitest + Testing Library, API client mocked, fixtures built from the real rule engine)",
+      "evidence": "npm run test -w @kagazready/web -- 21 tests passed (Vitest + Testing Library, API client mocked, fixtures built from the real rule engine)",
       "lastRun": "2026-09-18"
     },
     {
@@ -317,7 +325,7 @@
       "description": "No issues found renders without any approval or eligibility language.",
       "type": "frontend",
       "status": "passing",
-      "evidence": "npm run test -w @kagazready/web -- 20 tests passed (Vitest + Testing Library, API client mocked, fixtures built from the real rule engine)",
+      "evidence": "npm run test -w @kagazready/web -- 21 tests passed (Vitest + Testing Library, API client mocked, fixtures built from the real rule engine)",
       "lastRun": "2026-09-18"
     },
     {
@@ -325,7 +333,7 @@
       "description": "When translations are unavailable, the UI says so and still shows the English explanation.",
       "type": "frontend",
       "status": "passing",
-      "evidence": "npm run test -w @kagazready/web -- 20 tests passed (Vitest + Testing Library, API client mocked, fixtures built from the real rule engine)",
+      "evidence": "npm run test -w @kagazready/web -- 21 tests passed (Vitest + Testing Library, API client mocked, fixtures built from the real rule engine)",
       "lastRun": "2026-09-18"
     },
     {
@@ -333,7 +341,7 @@
       "description": "Replacing one document re-runs analysis without re-uploading the other two.",
       "type": "frontend",
       "status": "passing",
-      "evidence": "npm run test -w @kagazready/web -- 20 tests passed (Vitest + Testing Library, API client mocked, fixtures built from the real rule engine)",
+      "evidence": "npm run test -w @kagazready/web -- 21 tests passed (Vitest + Testing Library, API client mocked, fixtures built from the real rule engine)",
       "lastRun": "2026-09-18"
     },
     {
@@ -341,7 +349,7 @@
       "description": "Deletion is explicit, confirmed, and reports success.",
       "type": "frontend",
       "status": "passing",
-      "evidence": "npm run test -w @kagazready/web -- 20 tests passed (Vitest + Testing Library, API client mocked, fixtures built from the real rule engine)",
+      "evidence": "npm run test -w @kagazready/web -- 21 tests passed (Vitest + Testing Library, API client mocked, fixtures built from the real rule engine)",
       "lastRun": "2026-09-18"
     },
     {
@@ -349,7 +357,7 @@
       "description": "An expired analysis shows a clear recoverable message, not an error dump.",
       "type": "frontend",
       "status": "passing",
-      "evidence": "npm run test -w @kagazready/web -- 20 tests passed (Vitest + Testing Library, API client mocked, fixtures built from the real rule engine)",
+      "evidence": "npm run test -w @kagazready/web -- 21 tests passed (Vitest + Testing Library, API client mocked, fixtures built from the real rule engine)",
       "lastRun": "2026-09-18"
     },
     {
@@ -357,7 +365,7 @@
       "description": "Daily capacity reached shows an honest explanation of the demo cap.",
       "type": "frontend",
       "status": "passing",
-      "evidence": "npm run test -w @kagazready/web -- 20 tests passed (Vitest + Testing Library, API client mocked, fixtures built from the real rule engine)",
+      "evidence": "npm run test -w @kagazready/web -- 21 tests passed (Vitest + Testing Library, API client mocked, fixtures built from the real rule engine)",
       "lastRun": "2026-09-18"
     },
     {
@@ -365,7 +373,23 @@
       "description": "The whole journey is operable by keyboard with visible focus indicators.",
       "type": "frontend",
       "status": "passing",
-      "evidence": "npm run test -w @kagazready/web -- 20 tests passed (Vitest + Testing Library, API client mocked, fixtures built from the real rule engine)",
+      "evidence": "npm run test -w @kagazready/web -- 21 tests passed (Vitest + Testing Library, API client mocked, fixtures built from the real rule engine)",
+      "lastRun": "2026-09-18"
+    },
+    {
+      "id": "web-focus-visible",
+      "description": "The visually hidden file inputs show a focus ring on their label when focused from the keyboard.",
+      "type": "e2e",
+      "status": "passing",
+      "evidence": "Playwright desktop-chromium against the local dev server: label outlineStyle is \"solid\" while the input has focus. Before the fix the label used has-[:focus-visible] on a sibling input, which never matched (verified live 2026-09-18: computed outline none). Re-run on the public URL after Amplify job 5: 3/3 projects; computed label outline \"solid\" at 360x800.",
+      "lastRun": "2026-09-18"
+    },
+    {
+      "id": "web-arch-drawer-labels",
+      "description": "The architecture drawer pairs every service label with the paragraph that describes it, in en, hi and gu.",
+      "type": "frontend",
+      "status": "passing",
+      "evidence": "npm run test -w @kagazready/web -- 21 tests passed; the new test asserts archSteps and archServices have equal length in every language and that steps 2-6 mention Lambda, Textract, deterministic rules, Bedrock and DynamoDB in that order. Before the fix the lists were 5 and 6 long and the labels were shifted by one on the public URL. Checked on the public URL after Amplify job 5: the six labels pair with the six paragraphs.",
       "lastRun": "2026-09-18"
     },
     {
@@ -373,7 +397,7 @@
       "description": "With prefers-reduced-motion, the interface is immediately complete and no information depends on animation.",
       "type": "frontend",
       "status": "passing",
-      "evidence": "npm run test -w @kagazready/web -- 20 tests passed (Vitest + Testing Library, API client mocked, fixtures built from the real rule engine) Also the Playwright reduced-motion project passed the full journey on the public URL.",
+      "evidence": "npm run test -w @kagazready/web -- 21 tests passed (Vitest + Testing Library, API client mocked, fixtures built from the real rule engine) Also the Playwright reduced-motion project passed the full journey on the public URL.",
       "lastRun": "2026-09-18"
     },
     {
@@ -381,7 +405,7 @@
       "description": "Playwright: load app, run Needs Review sample, verify masked evidence, replace the problem document, reach No issues found, delete, confirm it cannot be reopened.",
       "type": "e2e",
       "status": "passing",
-      "evidence": "E2E_BASE_URL=https://main.d109ovvm872kui.amplifyapp.com npx playwright test -> 15 passed in 26.4s across desktop-chromium, mobile-chromium (Pixel 7) and reduced-motion projects. Each project ran the full journey against real S3/Textract: Needs review with masked evidence -> corrected bank proof -> No issues found -> delete -> API 404. Also: PDF refused before upload, hi/gu switching, drawer, CLS < 0.1 and no console errors.",
+      "evidence": "E2E_BASE_URL=https://main.d109ovvm872kui.amplifyapp.com npx playwright test -> 15 passed in 26.4s across desktop-chromium, mobile-chromium (Pixel 7) and reduced-motion projects. Each project ran the full journey against real S3/Textract: Needs review with masked evidence -> corrected bank proof -> No issues found -> delete -> API 404. Also: PDF refused before upload, hi/gu switching, drawer, CLS < 0.1 and no console errors. Re-run 2026-09-18 after the audit fixes (stack update + Amplify job 5): 18 passed in 20.0s (3 projects × 6, including the new focus-visibility test).",
       "lastRun": "2026-09-18"
     },
     {
@@ -545,6 +569,14 @@
       "lastRun": "2026-09-18"
     },
     {
+      "id": "aws-budget",
+      "description": "An AWS Budget with email alerts exists at the USD 10 / 18 / 23 thresholds.",
+      "type": "aws",
+      "status": "not_run",
+      "evidence": "aws budgets describe-budgets returned no budgets on 2026-09-18. docs/cost-estimate.md now says so and carries the create-budget command; the team must run it with its alert email.",
+      "lastRun": "2026-09-18"
+    },
+    {
       "id": "contracts-trust-boundaries",
       "description": "Contract schemas pin the trust boundaries: analysis ids and object keys reject traversal, foreign prefixes and unknown types; the Bedrock output schema rejects every decision word in en/hi/gu in any case, empty and oversized text and over-long lists; the template never mentions Aadhaar.",
       "type": "unit",
@@ -576,8 +608,8 @@
     "amplifyAppId": "d109ovvm872kui",
     "credits": {
       "checked": "2026-09-18",
-      "activeCreditsUsd": 120.0,
-      "usedUsd": 0.0,
+      "activeCreditsUsd": 120,
+      "usedUsd": 0,
       "note": "$100 AWS Free Tier credit (to 2027-08-31) + $20 'Explore AWS: Lambda' credit. All services used by KagazReady are on the covered list. Textract free-tier: 82 of 1000 pages used."
     },
     "repository": "https://github.com/navneet-cerecode/kagazready"

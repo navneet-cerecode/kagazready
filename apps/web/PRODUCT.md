@@ -48,7 +48,7 @@ interface must actively avoid implying.
   can be understood without uploading anything personal.
 - Requirements differ between scholarships. The product runs one configurable template and must say
   plainly that the checklist is not universal.
-- Uploads are private and short-lived: deleted on request, and automatically within a day.
+- Uploads are private and short-lived: deleted on request, and automatically within a day or two.
 
 ## Capabilities and Constraints
 

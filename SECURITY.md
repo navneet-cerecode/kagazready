@@ -20,7 +20,8 @@ include the analysis ID and time (UTC) if the problem involved a live check. The
 - Object keys are `uploads/<128-bit random analysis id>/<document type>/<64-bit random>.<ext>`.
 - The bucket has Block Public Access on all four settings, bucket-owner-enforced ownership,
   server-side encryption, a policy denying non-TLS requests, and a lifecycle rule that deletes
-  everything under `uploads/` after one day.
+  everything under `uploads/` after one day (S3 runs lifecycle expiry once a day at midnight UTC,
+  so in practice an object is gone within one to two days).
 - Before any document is processed, the API confirms with S3 that the object exists under this
   analysis's prefix and that its stored size and type are within limits.
 
@@ -51,7 +52,8 @@ include the analysis ID and time (UTC) if the problem involved a live check. The
 - Throttling at 10 requests per second, burst 20. A daily analysis cap (default 150) is enforced
   atomically in DynamoDB before Textract is called.
 - Four Lambda functions with four separate roles; each holds only the permissions its routes use.
-  The function that can spend on Textract cannot delete; the function that can delete cannot call
+  The function that can spend on Textract cannot delete uploads (it may only remove its own
+  unfinished table item so a failed run can be retried); the function that can delete cannot call
   Textract; the health check can do neither.
 - Every request body and path parameter is validated with zod. Errors return a generic message and
   a correlation id; internal detail goes to CloudWatch only.

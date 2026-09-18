@@ -28,7 +28,8 @@ Claude Code session.
 - Verified on the public URL on 2026-09-18: sample set → real upload → real Textract → Needs
   review with masked evidence → corrected bank proof → No issues found → delete.
 
-- Playwright: 15/15 on the public URL (desktop, Pixel 7, reduced motion) — `1e322bb`.
+- Playwright: 15/15 on the public URL (desktop, Pixel 7, reduced motion) — `1e322bb`; 18/18 after
+  the audit fixes on 2026-09-18.
 - Impeccable critique acted on and redeployed (Amplify job 3) — `e6bdbad`. Decision taken
   2026-09-18: keep the two-sheet structure (compose sheet → result sheet) rather than folding the
   result into the compose sheet; the rework is not worth the clock.
@@ -43,7 +44,19 @@ Claude Code session.
   https://github.com/navneet-cerecode/kagazready (the AWS account id was found in one unpushed
   commit and removed by a local rebase before the first push; history is clean).
 
-Remaining: Ponytail review (plugin not installed); the demo video and submission form (team);
+- **Read-only audit 2026-09-18 (afternoon), then fixes deployed** (stack update + Amplify job 5).
+  Found live and fixed: the "How AWS powers this" drawer paired six service labels with five
+  paragraphs (labels shifted by one); a `POST /analyses` whose upload was missing returned 500
+  (the analyses role lacked `s3:ListBucket`, so S3 answered HeadObject with 403) and every retry
+  of that id then answered 409 for the whole TTL (the `processing` item was never rolled back);
+  keyboard focus was invisible on the Add/Replace photo controls (`has-[:focus-visible]` on a
+  sibling input). Also: the reading state now replaces the sheet on phones instead of sitting two
+  screens down; copy and docs corrected ("within a day" → "a day or two", the budget claim, the
+  name-rule grammar); GSAP no longer warns on a clean sheet. Playwright 18/18 on the public URL
+  after the redeploy; the retry path re-checked live with curl (400, 400, 404).
+
+Remaining: Ponytail review (plugin not installed); the AWS Budget (command in
+`docs/cost-estimate.md`, needs the team's alert email); the demo video and submission form (team);
 Bedrock smoke test if the quota case succeeds.
 
 ## AWS credits (checked in the Billing console 2026-09-18)
@@ -196,13 +209,13 @@ Commands run on 2026-09-17, all from the repository root:
 
 | Command                  | Result                                              |
 | ------------------------ | --------------------------------------------------- |
-| `npm run test`           | 217 passed (8 contracts, 130 rules, 59 API, 20 web) |
+| `npm run test`           | 222 passed (8 contracts, 130 rules, 63 API, 21 web) |
 | `npm run typecheck`      | 0 errors across all workspaces                      |
 | `npx eslint .`           | 0 errors                                            |
 | `npx prettier --check .` | all files match                                     |
-| Playwright (public URL)  | 15 passed (3 projects × 5)                          |
+| Playwright (public URL)  | 18 passed (3 projects × 6)                          |
 
-Last re-run 2026-09-18 after `e6bdbad`.
+Last re-run 2026-09-18 after the audit fixes (stack update and Amplify job 5).
 
 Verified by those tests, against mocked AWS clients:
 
@@ -221,7 +234,8 @@ Verified by those tests, against mocked AWS clients:
   returns 404 afterwards.
 - No error response contains a bucket name, a table name, a region, an ARN, or a stack trace.
 
-`tests.json` records 67 passing, 1 blocked (Bedrock quotas), and 1 not yet run (Ponytail). Nothing is claimed
+`tests.json` records 70 passing, 1 blocked (Bedrock quotas), and 2 not yet run (Ponytail; the AWS
+Budget). Nothing is claimed
 as passing that has not actually run.
 
 ## Tooling installed by Claude on 2026-09-17

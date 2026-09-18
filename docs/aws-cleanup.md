@@ -5,18 +5,18 @@ signed in (`aws login`) to the hackathon account and that the region is `ap-sout
 
 ## What exists
 
-| Resource                                           | Created by                   | Removed by             |
-| -------------------------------------------------- | ---------------------------- | ---------------------- |
-| CloudFormation stack `kagazready`                  | `sam deploy`                 | step 1                 |
-| — S3 upload bucket (private, lifecycle 1 day)      | the stack                    | step 1 (emptied first) |
-| — DynamoDB table (on-demand, TTL)                  | the stack                    | step 1                 |
-| — HTTP API + stage, 4 Lambda functions, 4 roles    | the stack                    | step 1                 |
-| — 5 CloudWatch log groups (7-day retention)        | the stack                    | step 1                 |
-| CloudFormation stack `aws-sam-cli-managed-default` | `sam deploy --resolve-s3`    | step 2                 |
-| — SAM artefact bucket                              | that stack                   | step 2 (emptied first) |
-| Amplify app `kagazready` (id `d109ovvm872kui`)     | `aws amplify create-app`     | step 3                 |
-| AWS Budget (cost alert)                            | Billing console, by the team | step 4 (optional)      |
-| AWS Support case (Bedrock quotas)                  | Support console, by the team | resolves itself        |
+| Resource                                           | Created by                                    | Removed by             |
+| -------------------------------------------------- | --------------------------------------------- | ---------------------- |
+| CloudFormation stack `kagazready`                  | `sam deploy`                                  | step 1                 |
+| — S3 upload bucket (private, lifecycle 1 day)      | the stack                                     | step 1 (emptied first) |
+| — DynamoDB table (on-demand, TTL)                  | the stack                                     | step 1                 |
+| — HTTP API + stage, 4 Lambda functions, 4 roles    | the stack                                     | step 1                 |
+| — 5 CloudWatch log groups (7-day retention)        | the stack                                     | step 1                 |
+| CloudFormation stack `aws-sam-cli-managed-default` | `sam deploy --resolve-s3`                     | step 2                 |
+| — SAM artefact bucket                              | that stack                                    | step 2 (emptied first) |
+| Amplify app `kagazready` (id `d109ovvm872kui`)     | `aws amplify create-app`                      | step 3                 |
+| AWS Budget (cost alert)                            | not yet created — see `docs/cost-estimate.md` | step 4, if created     |
+| AWS Support case (Bedrock quotas)                  | Support console, by the team                  | resolves itself        |
 
 Nothing else was created. No IAM users, no access keys, no EC2, no VPC changes.
 
@@ -25,7 +25,7 @@ Nothing else was created. No IAM users, no access keys, no EC2, no VPC changes.
 ### 1. Delete the application stack
 
 The upload bucket has `DeletionPolicy: Delete`, but CloudFormation cannot delete a bucket that
-still holds objects. Empty it first (objects expire within a day anyway):
+still holds objects. Empty it first (objects expire within a day or two anyway):
 
 ```bash
 BUCKET=$(aws cloudformation describe-stacks --stack-name kagazready --region ap-south-1 --query "Stacks[0].Outputs[?OutputKey=='UploadBucketName'].OutputValue" --output text)
@@ -68,8 +68,9 @@ This removes the branch, the deployments and the `*.amplifyapp.com` URL.
 
 ### 4. Optional: the budget
 
-The cost budget bills nothing (the first two budgets per account are free). Delete it from
-Billing → Budgets if the account is being retired.
+No budget existed as of 2026-09-18; `docs/cost-estimate.md` has the command to create one. If one
+has been created since, it bills nothing (the first two budgets per account are free) — delete it
+from Billing → Budgets if the account is being retired.
 
 ### 5. Verify the account is quiet
 

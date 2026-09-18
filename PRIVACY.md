@@ -29,7 +29,8 @@ system as deployed on 2026-09-18 and is written to be checked against the code, 
 ## How long it is kept
 
 - **Document images:** until you press **Delete**, and in any case deleted by an S3 lifecycle rule
-  within one day of upload.
+  one day after upload — S3 applies the rule once a day at midnight UTC, so an image is gone within
+  one to two days of being uploaded.
 - **Results:** six hours, after which the API refuses to return them and DynamoDB removes them.
 - **Logs:** seven days. Logs never contain document text; numbers are redacted before writing.
 - **Delete** removes the result and every uploaded image immediately. After it, the check cannot be

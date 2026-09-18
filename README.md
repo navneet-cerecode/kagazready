@@ -108,9 +108,9 @@ Then build the frontend with `VITE_API_BASE_URL` set to the stack's `ApiBaseUrl`
 
 ## Verification
 
-Nothing in this repository is claimed to pass unless it ran. `tests.json` is the ledger (67
-passing, 1 blocked, 1 not run at the time of writing) and [VERIFICATION.md](VERIFICATION.md) is the
-narrative: 217 unit and handler tests, 8 live Textract tests, 15 Playwright runs against the public
+Nothing in this repository is claimed to pass unless it ran. `tests.json` is the ledger (70
+passing, 1 blocked, 2 not run at the time of writing) and [VERIFICATION.md](VERIFICATION.md) is the
+narrative: 222 unit and handler tests, 8 live Textract tests, 18 Playwright runs against the public
 URL in three viewports, and the smoke tests performed on the deployed stack.
 
 The one blocked check is the live Bedrock smoke test: this new AWS account has every Bedrock
@@ -122,7 +122,8 @@ is live. Details in [docs/limitations.md](docs/limitations.md).
 
 Uploads go straight from the browser to a private bucket under a presigned policy; the API never
 sees file bytes. Textract output lives only in Lambda memory. Results are stored masked, with a
-six-hour TTL that the code also enforces; objects expire in a day; **Delete** removes both at once.
+six-hour TTL that the code also enforces; objects expire within a day or two; **Delete** removes both at
+once.
 Logs are redacted of digit runs and kept for seven days. No accounts, no cookies, no analytics, no
 Aadhaar. [PRIVACY.md](PRIVACY.md) and [SECURITY.md](SECURITY.md) say the rest;
 [docs/threat-model.md](docs/threat-model.md) says what was accepted and why.
