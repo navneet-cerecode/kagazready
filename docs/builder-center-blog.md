@@ -80,12 +80,21 @@ optional sentence per finding and nothing else. The design survived its own wors
 names; Amplify served `index.html` and 404'd every asset. Python's `zipfile` writes portable
 entries; the deploy became a ten-line script anyone can run.
 
+**6. A mocked S3 says 404; the real one said 403.** Our tests proved that a missing upload became
+a polite "please upload that document again". In production it was a 500 — the function's role
+had `s3:GetObject` but not `s3:ListBucket`, and without ListBucket S3 answers `HeadObject` on an
+absent key with 403 so that it cannot be used to probe for keys. The fake client never knew. And
+because the failed run left its record in "processing", every retry of that id answered 409 for
+six hours. A read-only audit against the live URL found both in a minute. Now the role may list
+its own prefix, and a failed run rolls itself back so the same id can simply try again.
+
 ### What we would tell someone starting Thursday
 
 Decide with code and explain with words; the day your model is unavailable is the day you find out
 whether your product was ever yours. Calibrate against the real service early — Textract's numbers
-are not what you would guess. And write down every check you ran: ours is a `tests.json` ledger
-where nothing is marked passing unless it actually ran, and "blocked" says why.
+are not what you would guess. Test the deployed thing, not only the mocked thing — IAM changes what
+"not found" even means. And write down every check you ran: ours is a `tests.json` ledger where
+nothing is marked passing unless it actually ran, and "blocked" says why.
 
 _Built with Claude Code as pair programmer; the team directed every decision and approved every
 AWS action. Code and the full docs set are in the repository._
