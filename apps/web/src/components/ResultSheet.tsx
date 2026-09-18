@@ -100,6 +100,8 @@ export function ResultSheet({
       const mm = gsap.matchMedia();
       mm.add('(prefers-reduced-motion: no-preference)', () => {
         gsap.from('[data-status]', { y: 6, opacity: 0, duration: 0.32, ease: 'power3.out' });
+        // A clean sheet has no marks; asking GSAP to animate none only logs a warning.
+        if (!container.current?.querySelector('[data-mark]')) return;
         gsap.from('[data-mark]', {
           x: -10,
           opacity: 0,
@@ -399,7 +401,7 @@ function DocumentControl({
         id={id}
         type="file"
         accept="image/jpeg,image/png"
-        className="sr-only"
+        className="peer sr-only"
         disabled={disabled}
         aria-label={`${verb}: ${label}`}
         data-testid={`document-control-${documentType}`}
@@ -411,7 +413,7 @@ function DocumentControl({
       />
       <label
         htmlFor={id}
-        className={`text-small inline-flex min-h-11 cursor-pointer items-center gap-1.5 rounded-sm border border-line-strong px-3 py-2.5 text-ink transition-colors duration-(--duration-micro) hover:bg-paper-deep active:bg-paper-deep has-[:focus-visible]:ring-focus ${disabled ? 'pointer-events-none opacity-50' : ''}`}
+        className={`text-small inline-flex min-h-11 cursor-pointer items-center gap-1.5 rounded-sm border border-line-strong px-3 py-2.5 text-ink transition-colors duration-(--duration-micro) hover:bg-paper-deep active:bg-paper-deep peer-focus-visible:ring-focus ${disabled ? 'pointer-events-none opacity-50' : ''}`}
       >
         <Icon name={present ? 'refresh' : 'plus'} size={16} />
         {verb}: {label}

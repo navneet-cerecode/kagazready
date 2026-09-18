@@ -42,7 +42,10 @@ export default function App() {
   }, [state.result]);
 
   const anyFile = DOCUMENT_TYPES.some((type) => state.slots[type].file);
-  const showSheet = state.phase === 'compose' || (busy && !state.replacing && !state.result);
+  // The sheet stays while files upload (its rows carry the progress), then gives way to the
+  // reading state. Keeping both meant that on a phone "Reading your documents" sat two screens
+  // below a disabled button, and nothing visible moved for the whole Textract wait.
+  const showSheet = state.phase === 'compose' || (state.phase === 'uploading' && !state.replacing);
 
   /* Phase handoff: the incoming section rises into place. Reduced motion: it is simply there. */
   useGSAP(
@@ -159,8 +162,8 @@ export default function App() {
           </section>
         )}
 
-        {state.phase === 'analysing' && (
-          <section data-phase className="mt-8" aria-live="polite" data-testid="processing">
+        {state.phase === 'analysing' && !state.replacing && (
+          <section data-phase aria-live="polite" data-testid="processing">
             <h2 className="font-display text-heading m-0 text-ink">{strings.processingHeading}</h2>
             <ol className="m-0 mt-3 list-none p-0">
               <li className="flex items-center gap-3 py-2 text-body text-graphite">

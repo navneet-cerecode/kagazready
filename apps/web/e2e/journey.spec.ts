@@ -97,6 +97,21 @@ test('a wrong file type is refused before any upload', async ({ page }) => {
   await expect(page.getByTestId('check')).toBeDisabled();
 });
 
+test('keyboard focus is visible on the file controls', async ({ page }) => {
+  await page.goto('/');
+
+  // The file input is visually hidden; its label must carry the ring when the input has focus.
+  const input = page.getByLabel(/choose a file for class xii marksheet/i);
+  await input.focus();
+  await expect(input).toBeFocused();
+
+  const outline = await input.evaluate((element) => {
+    const label = document.querySelector(`label[for="${element.id}"]`);
+    return label ? getComputedStyle(label).outlineStyle : 'no-label';
+  });
+  expect(outline).toBe('solid');
+});
+
 test('the interface switches to Hindi and Gujarati', async ({ page }) => {
   await page.goto('/');
 

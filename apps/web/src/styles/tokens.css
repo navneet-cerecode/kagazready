@@ -215,7 +215,12 @@
   background: var(--mark, var(--color-line-strong));
 }
 
-/* Focus ring for custom controls that cannot use :focus-visible alone (file inputs). */
+/*
+ * Focus ring for a label that stands in for a visually hidden file input. The input is the label's
+ * previous sibling (`peer`), not its child, so this is applied with `peer-focus-visible:`, never
+ * with `has-[:focus-visible]:` — that variant silently matched nothing and keyboard users had no
+ * ring on the one control that matters.
+ */
 @utility ring-focus {
   outline: 2px solid var(--color-teal);
   outline-offset: 2px;
