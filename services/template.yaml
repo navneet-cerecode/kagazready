@@ -180,7 +180,8 @@ Resources:
   #
   # Four functions rather than one, so that each carries only the permissions its routes need.
   # The function that can spend money on Textract cannot delete anything; the function that can
-  # delete cannot call Textract or Bedrock; the health check can do neither.
+  # delete cannot call Textract (it may call Bedrock, only to translate a result that already
+  # exists); the health check can do none of it.
   # ---------------------------------------------------------------------------
 
   UploadsLogGroup:
@@ -276,7 +277,9 @@ Resources:
     Properties:
       CodeUri: api/dist/analysis/
       Handler: index.handler
-      Description: Reads and deletes analyses. Cannot call Textract or Bedrock.
+      Description: >
+        Reads and deletes analyses. Cannot call Textract. Calls Bedrock only to rephrase an
+        already-decided result in a newly requested language.
       LoggingConfig:
         LogGroup: !Ref AnalysisLogGroup
       Environment:
