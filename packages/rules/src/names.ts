@@ -68,6 +68,23 @@ export function compareNames(left: string, right: string): NameComparison {
     return result('minor');
   }
 
+  // One side leaves out the middle name(s) — "Priya Rameshbhai Patel" on the marksheet, "Priya
+  // Patel" on the passbook. Indian documents drop the father's name routinely, and the first and
+  // last names still agree, so this is a difference to look at, not a different person. A missing
+  // *first* or *last* name is still material below.
+  if (leftOnly.length === 0 || rightOnly.length === 0) {
+    const first = (tokens: string[]) => tokens[0];
+    const last = (tokens: string[]) => tokens[tokens.length - 1];
+    if (
+      leftTokens.length >= 2 &&
+      rightTokens.length >= 2 &&
+      first(leftTokens) === first(rightTokens) &&
+      last(leftTokens) === last(rightTokens)
+    ) {
+      return result('minor');
+    }
+  }
+
   // Exactly one token differs on each side.
   if (leftOnly.length === 1 && rightOnly.length === 1) {
     const a = leftOnly[0]!;

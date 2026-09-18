@@ -36,6 +36,13 @@ describe('compareNames — minor difference', () => {
     expect(relation('Priya R Patel', 'Priya Patel')).toBe('minor');
   });
 
+  it('treats a middle name one document leaves out as minor when first and last agree', () => {
+    expect(relation('Priya Rameshbhai Patel', 'Priya Patel')).toBe('minor');
+    expect(relation('Priya Patel', 'Priya Rameshbhai Patel')).toBe('minor');
+    expect(relation('प्रिया रमेशभाई पटेल', 'प्रिया पटेल')).toBe('minor');
+    expect(relation('Aarav Kumar Singh', 'Aarav Singh')).toBe('minor');
+  });
+
   it('flags a one-character spelling variant in a long token', () => {
     expect(relation('Priya Patel', 'Priya Pately')).toBe('minor');
     expect(relation('Priya Patel', 'Priya Patal')).toBe('minor');
@@ -47,8 +54,10 @@ describe('compareNames — material difference', () => {
     expect(relation('Priya Rameshbhai Patel', 'Priya Rameshbhai Shah')).toBe('material');
   });
 
-  it('flags a whole extra name part', () => {
+  it('flags a whole extra name part at the end or the start', () => {
     expect(relation('Aarav Kumar', 'Aarav Kumar Singh')).toBe('material');
+    expect(relation('Kumar Singh', 'Aarav Kumar Singh')).toBe('material');
+    expect(relation('Aarav', 'Aarav Singh')).toBe('material');
   });
 
   it('does not excuse a one-character difference in a short token', () => {

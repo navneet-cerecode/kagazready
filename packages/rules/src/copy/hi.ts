@@ -73,7 +73,7 @@ export const HI: LanguageCopy = {
     name_minor_difference: {
       title: 'दस्तावेज़ों में नाम का छोटा अंतर',
       reason:
-        'आपके {outlierDocumentTypes} पर नाम "{outlierName}" लिखा है, जबकि {referenceDocumentTypes} पर "{referenceName}"। अंतर छोटा है — जैसे कोई आद्याक्षर या वर्तनी का फ़र्क़।',
+        'आपके {outlierDocumentTypes} पर नाम "{outlierName}" लिखा है, जबकि {referenceDocumentTypes} पर "{referenceName}"। अंतर छोटा है — जैसे कोई आद्याक्षर, वर्तनी का फ़र्क़, या बीच का नाम जो किसी एक दस्तावेज़ में छूट गया हो।',
       suggestedAction:
         'तय करें कि आपके आवेदन में कौन सी वर्तनी रहेगी, और जमा करने वाले दस्तावेज़ों में वही रखें। अगर कोई दस्तावेज़ सचमुच ग़लत है, तो उसे जारी करने वाले कार्यालय से ठीक करवाएँ।',
     },

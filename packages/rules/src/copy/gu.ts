@@ -72,7 +72,7 @@ export const GU: LanguageCopy = {
     name_minor_difference: {
       title: 'દસ્તાવેજો વચ્ચે નામમાં નાનો ફરક',
       reason:
-        'તમારા {outlierDocumentTypes} પર નામ "{outlierName}" લખ્યું છે, જ્યારે {referenceDocumentTypes} પર "{referenceName}". ફરક નાનો છે — જેમ કે કોઈ આદ્યાક્ષર અથવા જોડણીનો ફેર.',
+        'તમારા {outlierDocumentTypes} પર નામ "{outlierName}" લખ્યું છે, જ્યારે {referenceDocumentTypes} પર "{referenceName}". ફરક નાનો છે — જેમ કે કોઈ આદ્યાક્ષર, જોડણીનો ફેર, અથવા વચ્ચેનું નામ જે કોઈ એક દસ્તાવેજમાં રહી ગયું હોય.',
       suggestedAction:
         'નક્કી કરો કે તમારી અરજીમાં કઈ જોડણી રહેશે, અને સબમિટ કરનારા દસ્તાવેજોમાં એ જ રાખો. જો કોઈ દસ્તાવેજ ખરેખર ખોટો હોય, તો તે જારી કરનાર કચેરીથી સુધારાવો.',
     },

@@ -68,7 +68,7 @@ export const EN: LanguageCopy = {
     name_minor_difference: {
       title: 'Small difference in the name between documents',
       reason:
-        'The name on your {outlierDocumentTypes} reads "{outlierName}", while on your {referenceDocumentTypes} it is "{referenceName}". The difference is small — an initial or a spelling variant.',
+        'The name on your {outlierDocumentTypes} reads "{outlierName}", while on your {referenceDocumentTypes} it is "{referenceName}". The difference is small — an initial, a spelling variant, or a middle name one of them leaves out.',
       suggestedAction:
         'Decide which spelling your application will use, and make sure the documents you submit use it too. If a document is genuinely wrong, ask the office that issued it to correct it.',
     },
