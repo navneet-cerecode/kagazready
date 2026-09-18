@@ -33,8 +33,17 @@ Claude Code session.
   2026-09-18: keep the two-sheet structure (compose sheet → result sheet) rather than folding the
   result into the compose sheet; the rework is not worth the clock.
 
-Remaining: Impeccable audit/polish/distill + DESIGN.md, animation review, security review and
-threat model, documentation set, Ponytail review, public GitHub repository (needs approval).
+- Impeccable audit 19/20 and polish (`18aacc3`), animation review (`db0f4b4`), security review
+  and `docs/threat-model.md` (`ba81f25`), the full documentation set with `DESIGN.md`
+  (`a1824ea`), README screenshots (`b42a2bc`) — all done 2026-09-18.
+
+**Not yet deployed:** `18aacc3` (padding/measure polish) and `db0f4b4` (motion fixes) are built
+and verified locally but the `aws login` session expired before `scripts/deploy-web.py` could
+run. Deploy them, then re-run the detector at 1280x800 and 390x844 and the Playwright desktop
+project against the public URL, and refresh `docs/screenshots/` if anything visible changed.
+
+Remaining: that deployment; Ponytail review (plugin not installed); public GitHub repository
+(needs the owner/repo name and explicit approval); Bedrock smoke test if the quota case succeeds.
 
 ## AWS credits (checked in the Billing console 2026-09-18)
 
@@ -211,7 +220,7 @@ Verified by those tests, against mocked AWS clients:
   returns 404 afterwards.
 - No error response contains a bucket name, a table name, a region, an ARN, or a stack trace.
 
-`tests.json` records 62 passing, 1 blocked (Bedrock quotas), and 4 not yet run. Nothing is claimed
+`tests.json` records 65 passing, 1 blocked (Bedrock quotas), and 1 not yet run (Ponytail). Nothing is claimed
 as passing that has not actually run.
 
 ## Tooling installed by Claude on 2026-09-17
@@ -302,13 +311,14 @@ per-request, and S3 holds a few kilobytes that expire within a day.
 
 ## Next action
 
-1. Impeccable audit → polish → distill; `DESIGN.md` via the documenter; `docs/design-system.md`.
-2. Animation review (find-animation-opportunities, review-animations) — reduced motion and
-   mobile are already covered by Playwright.
-3. Security review and `docs/threat-model.md`; fix practical high-priority findings.
-4. Documentation set: `README.md`, `SECURITY.md`, `PRIVACY.md`, `VERIFICATION.md`, root
-   `.env.example`, and `docs/{architecture,cost-estimate,aws-cleanup,user-research,demo-script,submission-writeup,limitations,judge-questions}.md`.
-5. Ponytail review once the user installs the plugin.
-6. If the support case raises the Bedrock quotas: redeploy with
-   `BedrockModelId=apac.amazon.nova-lite-v1:0` and run the en/hi/gu smoke test.
-7. Ask the user for the GitHub owner/repo name; create and push only with explicit approval.
+1. User runs `aws login`; then:
+   `VITE_API_BASE_URL=https://qev138fuyk.execute-api.ap-south-1.amazonaws.com/prod npm run build -w @kagazready/web`
+   and `python scripts/deploy-web.py`; re-run the detector on the live URL (both viewports) and
+   `E2E_BASE_URL=... npx playwright test --project=desktop-chromium`; update `tests.json`.
+2. Ponytail review once the user installs the plugin
+   (`/plugin marketplace add DietrichGebert/ponytail`, `/plugin install ponytail@ponytail`).
+3. If the support case raises the Bedrock quotas: redeploy with
+   `BedrockModelId=apac.amazon.nova-lite-v1:0`, run the en/hi/gu smoke test, update
+   `tests.json`, `docs/limitations.md`, `README.md`.
+4. Ask the user for the GitHub owner/repo name; create and push only with explicit approval.
+   Before pushing: grep the tracked files for the AWS account id; it must appear nowhere.
