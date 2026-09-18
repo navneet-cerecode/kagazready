@@ -106,9 +106,9 @@ Then build the frontend with `VITE_API_BASE_URL` set to the stack's `ApiBaseUrl`
 
 ## Verification
 
-Nothing in this repository is claimed to pass unless it ran. `tests.json` is the ledger (65
+Nothing in this repository is claimed to pass unless it ran. `tests.json` is the ledger (67
 passing, 1 blocked, 1 not run at the time of writing) and [VERIFICATION.md](VERIFICATION.md) is the
-narrative: 209 unit and handler tests, 8 live Textract tests, 15 Playwright runs against the public
+narrative: 217 unit and handler tests, 8 live Textract tests, 15 Playwright runs against the public
 URL in three viewports, and the smoke tests performed on the deployed stack.
 
 The one blocked check is the live Bedrock smoke test: this new AWS account has every Bedrock

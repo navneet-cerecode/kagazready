@@ -543,10 +543,26 @@
       "status": "passing",
       "evidence": "aws amplify create-app/create-deployment/start-deployment -> SUCCEED; curl -D - https://main.d109ovvm872kui.amplifyapp.com shows every header from apps/web/customHttp.yml. Full sample journey completed on the public URL under the strict CSP.",
       "lastRun": "2026-09-18"
+    },
+    {
+      "id": "contracts-trust-boundaries",
+      "description": "Contract schemas pin the trust boundaries: analysis ids and object keys reject traversal, foreign prefixes and unknown types; the Bedrock output schema rejects every decision word in en/hi/gu in any case, empty and oversized text and over-long lists; the template never mentions Aadhaar.",
+      "type": "unit",
+      "status": "passing",
+      "evidence": "npm run test -w @kagazready/contracts -- 8 tests passed. Added 2026-09-18 after discovering the workspace had a test script but no tests, which made `npm run verify` exit 1.",
+      "lastRun": "2026-09-18"
+    },
+    {
+      "id": "verify-pipeline",
+      "description": "`npm run verify` (format:check, lint, typecheck, every workspace's tests, every build) exits 0 from a clean checkout.",
+      "type": "build",
+      "status": "passing",
+      "evidence": "npm run verify -> exit 0 on 2026-09-18: prettier clean, eslint clean, tsc clean in 5 workspaces, 217 tests (8 contracts, 130 rules, 59 api, 20 web), api bundles 'handler OK', web build ok.",
+      "lastRun": "2026-09-18"
     }
   ],
   "summary": {
-    "passing": 65,
+    "passing": 67,
     "blocked": 1,
     "not_run": 1
   },

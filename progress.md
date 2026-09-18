@@ -193,13 +193,13 @@ Both were invisible to 176 passing local tests, and both are now pinned by regre
 
 Commands run on 2026-09-17, all from the repository root:
 
-| Command                  | Result                                           |
-| ------------------------ | ------------------------------------------------ |
-| `npm run test`           | 209 passed (130 rules, 59 API, 20 web), 0 failed |
-| `npm run typecheck`      | 0 errors across all workspaces                   |
-| `npx eslint .`           | 0 errors                                         |
-| `npx prettier --check .` | all files match                                  |
-| Playwright (public URL)  | 15 passed (3 projects × 5)                       |
+| Command                  | Result                                              |
+| ------------------------ | --------------------------------------------------- |
+| `npm run test`           | 217 passed (8 contracts, 130 rules, 59 API, 20 web) |
+| `npm run typecheck`      | 0 errors across all workspaces                      |
+| `npx eslint .`           | 0 errors                                            |
+| `npx prettier --check .` | all files match                                     |
+| Playwright (public URL)  | 15 passed (3 projects × 5)                          |
 
 Last re-run 2026-09-18 after `e6bdbad`.
 
@@ -220,7 +220,7 @@ Verified by those tests, against mocked AWS clients:
   returns 404 afterwards.
 - No error response contains a bucket name, a table name, a region, an ARN, or a stack trace.
 
-`tests.json` records 65 passing, 1 blocked (Bedrock quotas), and 1 not yet run (Ponytail). Nothing is claimed
+`tests.json` records 67 passing, 1 blocked (Bedrock quotas), and 1 not yet run (Ponytail). Nothing is claimed
 as passing that has not actually run.
 
 ## Tooling installed by Claude on 2026-09-17

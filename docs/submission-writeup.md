@@ -59,9 +59,9 @@ day, and **Delete** removes both immediately. No accounts, no cookies, no analyt
 
 ## Verification
 
-Nothing is claimed that did not run: 209 unit and handler tests, 8 live Textract tests, 15
+Nothing is claimed that did not run: 217 unit and handler tests, 8 live Textract tests, 15
 Playwright runs against the public URL (desktop, Pixel 7, reduced motion), a live smoke of the
-full journey including deletion. `tests.json` is the ledger — 65 passing, 1 blocked (Bedrock
+full journey including deletion. `tests.json` is the ledger — 67 passing, 1 blocked (Bedrock
 quota), 1 not run (Ponytail). `VERIFICATION.md` has the detail.
 
 ## Craft
