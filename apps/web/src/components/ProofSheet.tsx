@@ -120,8 +120,8 @@ function SheetRow({ index, documentType, state, strings, onFile, disabled }: She
             </div>
             <div className="mt-1 h-1 overflow-hidden rounded-hair bg-paper-deep">
               <div
-                className="h-full bg-teal transition-[width] duration-(--duration-micro) ease-linear"
-                style={{ width: `${Math.round(slot.progress * 100)}%` }}
+                className="h-full origin-left bg-teal transition-transform duration-(--duration-micro) ease-linear motion-reduce:transition-none"
+                style={{ transform: `scaleX(${slot.progress})` }}
               />
             </div>
           </div>

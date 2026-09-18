@@ -82,8 +82,8 @@ export function ResultSheet({
     const tween = gsap.to(marks, {
       x: -14,
       opacity: 0,
-      duration: 0.24,
-      ease: 'power2.in',
+      duration: 0.2,
+      ease: 'power3.out',
       stagger: 0.04,
       onComplete: () => {
         if (pendingResult.current) setShown(pendingResult.current);
@@ -103,7 +103,7 @@ export function ResultSheet({
         gsap.from('[data-mark]', {
           x: -10,
           opacity: 0,
-          duration: 0.4,
+          duration: 0.3,
           ease: 'power3.out',
           stagger: 0.07,
           delay: 0.08,
@@ -196,7 +196,7 @@ export function ResultSheet({
             <Icon
               name="chevron"
               size={18}
-              className="transition-transform duration-(--duration-micro) group-open:rotate-180"
+              className="transition-transform duration-(--duration-micro) group-open:rotate-180 motion-reduce:transition-none"
             />
             <span id="readings-heading" className="font-display text-heading">
               {strings.readingsHeading}

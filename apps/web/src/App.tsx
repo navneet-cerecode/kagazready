@@ -52,7 +52,7 @@ export default function App() {
         gsap.from('[data-phase]', {
           y: 10,
           opacity: 0,
-          duration: 0.38,
+          duration: 0.3,
           ease: 'power3.out',
           clearProps: 'all',
         });
