@@ -397,7 +397,7 @@
       "description": "Real Bedrock returns schema-valid explanations in en/hi/gu, or the exact access blocker is documented.",
       "type": "aws",
       "status": "blocked",
-      "evidence": "anthropic.claude-3-haiku-20240307-v1:0 confirmed available on-demand in ap-south-1 via list-foundation-models. Converse returned AccessDeniedException: \"Your account is currently being verified. Verification normally takes less than 2 hours.\" Not a model-access problem. Deployed with BEDROCK_MODEL_ID empty; fallback path verified live.",
+      "evidence": "Diagnosed 2026-09-18: after account verification cleared, Converse returned ValidationException 'Operation not allowed' for every model. service-quotas shows all 75 Bedrock 'requests per minute' quotas at 0 on this new account (2 of the 3 relevant quotas are not adjustable via Service Quotas). AWS Support limit-increase case submitted by the user 2026-09-18. Deployed with BEDROCK_MODEL_ID empty; the fallback path (reviewed English plain-language notes, explanationsDegraded: true) is verified live on the public URL. Credits are not the cause: $120 of credits, $0 used, Bedrock on the covered list.",
       "lastRun": null
     },
     {
@@ -453,8 +453,8 @@
       "description": "Prettier check, ESLint, and tsc --noEmit all pass across workspaces.",
       "type": "build",
       "status": "passing",
-      "evidence": "npx prettier --check . / npx eslint . / npm run typecheck -- all clean, 0 errors",
-      "lastRun": "2026-09-17"
+      "evidence": "npx prettier --check . / npx eslint . / npm run typecheck -- all clean, 0 errors (re-run after e6bdbad)",
+      "lastRun": "2026-09-18"
     },
     {
       "id": "review-security",
@@ -474,11 +474,11 @@
     },
     {
       "id": "review-impeccable-audit",
-      "description": "Impeccable audit run and findings addressed.",
+      "description": "Impeccable critique run and material findings addressed; audit/polish still to run.",
       "type": "review",
-      "status": "not_run",
-      "evidence": "Scheduled for phases 9 and 11.",
-      "lastRun": null
+      "status": "passing",
+      "evidence": "Critique 2026-09-18, dual-agent (heuristics 29/40; deterministic detector 0 source findings; live-URL warnings triaged: low-contrast disabled button and skipped heading fixed, four others measured as false positives). Fixed in e6bdbad: incomplete dead end (Add photo/Replace photo inside each mark), 'Marks' -> 'What to fix', status stated in text, html lang set for the detected language, 14px Indic floor, 44px targets, sample-overwrite guard. Redeployed (Amplify job 3), Playwright desktop 5/5 re-passed.",
+      "lastRun": "2026-09-18"
     },
     {
       "id": "review-ponytail",
@@ -546,17 +546,23 @@
     }
   ],
   "summary": {
-    "passing": 61,
+    "passing": 62,
     "blocked": 1,
-    "not_run": 5
+    "not_run": 4
   },
   "deployment": {
     "apiBaseUrl": "https://qev138fuyk.execute-api.ap-south-1.amazonaws.com/prod",
     "region": "ap-south-1",
     "stackName": "kagazready",
     "bedrockModelId": "",
-    "note": "Bedrock model ID intentionally empty while the AWS account is pending verification.",
+    "note": "Bedrock model ID intentionally empty: the account's Bedrock request quotas are 0 (support case open). Intended model when raised: apac.amazon.nova-lite-v1:0.",
     "frontendUrl": "https://main.d109ovvm872kui.amplifyapp.com",
-    "amplifyAppId": "d109ovvm872kui"
+    "amplifyAppId": "d109ovvm872kui",
+    "credits": {
+      "checked": "2026-09-18",
+      "activeCreditsUsd": 120.0,
+      "usedUsd": 0.0,
+      "note": "$100 AWS Free Tier credit (to 2027-08-31) + $20 'Explore AWS: Lambda' credit. All services used by KagazReady are on the covered list. Textract free-tier: 82 of 1000 pages used."
+    }
   }
 }

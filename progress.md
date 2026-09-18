@@ -28,8 +28,25 @@ Claude Code session.
 - Verified on the public URL on 2026-09-18: sample set → real upload → real Textract → Needs
   review with masked evidence → corrected bank proof → No issues found → delete.
 
-Remaining: Playwright run (needs a Chromium download), Impeccable critique/audit/polish, animation
-review, security review and threat model, documentation set, Ponytail review.
+- Playwright: 15/15 on the public URL (desktop, Pixel 7, reduced motion) — `1e322bb`.
+- Impeccable critique acted on and redeployed (Amplify job 3) — `e6bdbad`. Decision taken
+  2026-09-18: keep the two-sheet structure (compose sheet → result sheet) rather than folding the
+  result into the compose sheet; the rework is not worth the clock.
+
+Remaining: Impeccable audit/polish/distill + DESIGN.md, animation review, security review and
+threat model, documentation set, Ponytail review, public GitHub repository (needs approval).
+
+## AWS credits (checked in the Billing console 2026-09-18)
+
+- **$120.00 active, $0.00 used**: a $100 "AWS Free Tier" credit (issued 2026-08-31, expires
+  2027-08-31) and a $20 "Explore AWS: Create a web app using AWS Lambda" credit earned by the
+  deployment on 2026-09-17.
+- Every service KagazReady uses is on the credits' covered list: Textract, Bedrock, Lambda, API
+  Gateway, DynamoDB, S3, Amplify, CloudWatch, CloudFormation.
+- Free-tier usage so far: Textract 82 of 1,000 free pages, Lambda 7 requests, CloudWatch 0 GB.
+  Nothing has been billed and nothing has drawn on the credits.
+- Credits are therefore **not** the reason Bedrock is blocked (see blocker 1). The budget rules
+  in `CLAUDE.md` (warn $10, urgent $18, boundary $23) stay in force regardless of the credits.
 
 ## Environment audit (2026-09-17)
 
@@ -167,12 +184,15 @@ Both were invisible to 176 passing local tests, and both are now pinned by regre
 
 Commands run on 2026-09-17, all from the repository root:
 
-| Command                  | Result                                   |
-| ------------------------ | ---------------------------------------- |
-| `npm run test`           | 176 passed (130 rules, 46 API), 0 failed |
-| `npm run typecheck`      | 0 errors across all three workspaces     |
-| `npx eslint .`           | 0 errors                                 |
-| `npx prettier --check .` | all files match                          |
+| Command                  | Result                                           |
+| ------------------------ | ------------------------------------------------ |
+| `npm run test`           | 209 passed (130 rules, 59 API, 20 web), 0 failed |
+| `npm run typecheck`      | 0 errors across all workspaces                   |
+| `npx eslint .`           | 0 errors                                         |
+| `npx prettier --check .` | all files match                                  |
+| Playwright (public URL)  | 15 passed (3 projects × 5)                       |
+
+Last re-run 2026-09-18 after `e6bdbad`.
 
 Verified by those tests, against mocked AWS clients:
 
@@ -191,7 +211,7 @@ Verified by those tests, against mocked AWS clients:
   returns 404 afterwards.
 - No error response contains a bucket name, a table name, a region, an ARN, or a stack trace.
 
-`tests.json` records 34 passing, 6 blocked on AWS tooling, and 20 not yet run. Nothing is claimed
+`tests.json` records 62 passing, 1 blocked (Bedrock quotas), and 4 not yet run. Nothing is claimed
 as passing that has not actually run.
 
 ## Tooling installed by Claude on 2026-09-17
@@ -242,14 +262,7 @@ as passing that has not actually run.
    platform capabilities, prefer installed dependencies, minimum maintainable implementation, never
    strip security/validation/accessibility/error-handling/data-loss protection). The real
    `/ponytail` review must still be run before completion.
-3. **Bedrock model access.** Requires a console action by the user — model access is granted per
-   account and region, and Anthropic models additionally require accepting an end-user licence,
-   which Claude must not accept on the user's behalf. Once credentials exist, the model ID will be
-   verified with `aws bedrock list-foundation-models --region ap-south-1` rather than from the docs:
-   the per-region list has moved out of the AWS documentation pages, so the API is now the
-   authoritative source. `BEDROCK_MODEL_ID` has no default; an empty value is a supported
-   configuration in which the analysis works and explanations use reviewed English fallback copy.
-4. ~~Commit author identity.~~ **Resolved 2026-09-18.** The user confirmed
+3. ~~Commit author identity.~~ **Resolved 2026-09-18.** The user confirmed
    `navneet-cerecode <cerecode9@gmail.com>`, which matches the existing global config. Set
    repo-locally rather than relying on the global value, so this repository's authorship is
    explicit. No GitHub remote exists yet, and creating or pushing a public repository still needs
@@ -289,10 +302,13 @@ per-request, and S3 holds a few kilobytes that expire within a day.
 
 ## Next action
 
-1. `apps/web` — the frontend, starting with an Impeccable design direction pass. It needs the
-   generated PNGs as static assets; `npm run fixtures -- apps/web/public/samples` writes them
-   wherever the build wants them.
-2. Amplify Hosting, then update the stack's `AllowedOrigin` from `http://localhost:5173` to the
-   deployed frontend origin. The API URL does not change.
-3. When the user enables Amazon Nova Lite in the Bedrock console: redeploy with
-   `BedrockModelId=apac.amazon.nova-lite-v1:0` and run the Bedrock smoke test in en/hi/gu.
+1. Impeccable audit → polish → distill; `DESIGN.md` via the documenter; `docs/design-system.md`.
+2. Animation review (find-animation-opportunities, review-animations) — reduced motion and
+   mobile are already covered by Playwright.
+3. Security review and `docs/threat-model.md`; fix practical high-priority findings.
+4. Documentation set: `README.md`, `SECURITY.md`, `PRIVACY.md`, `VERIFICATION.md`, root
+   `.env.example`, and `docs/{architecture,cost-estimate,aws-cleanup,user-research,demo-script,submission-writeup,limitations,judge-questions}.md`.
+5. Ponytail review once the user installs the plugin.
+6. If the support case raises the Bedrock quotas: redeploy with
+   `BedrockModelId=apac.amazon.nova-lite-v1:0` and run the en/hi/gu smoke test.
+7. Ask the user for the GitHub owner/repo name; create and push only with explicit approval.
