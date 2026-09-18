@@ -313,7 +313,10 @@ export function renderIncomeCertificate({
 export function renderBankProof({
   accountHolderName = 'Priya Rameshbhai Patel',
   accountNumber = '3049 8812 7745',
-  ifsc = 'SYNB0001234',
+  // Measured against Textract on 2026-09-18: 'SYNB0001234' read at 89.5%, a hair above the 88%
+  // threshold for this field, so a bad day could turn the clean sample into "Needs review". The
+  // run of zeros and the 1 were the ambiguity; this value reads at 94.6% in the same font.
+  ifsc = 'SYNB0234567',
   accountNumberQuality = 'clean',
 } = {}) {
   const { canvas, ctx } = newPage();

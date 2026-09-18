@@ -119,6 +119,8 @@ python scripts/deploy-web.py
 `fixtures/` renders four synthetic PNGs with invented identities and no institutional branding,
 each stamped "SYNTHETIC DEMO DOCUMENT — NOT VALID" with a diagonal watermark. The bank proof for the
 "needs review" scenario is rendered with a scratched account number whose Textract confidence was
-measured at 61.9% against a rule threshold of 88% (`fixtures/out/calibration.txt`); the threshold
-was never moved to fit the image. `npm run fixtures -- apps/web/public/samples` regenerates them
+measured at 61.9% when first calibrated and 62.2% for the rendering now shipped (the scratches are
+random per render; calibration runs land in the 56–63% band, `fixtures/out/calibration.txt`)
+against a rule threshold of 88%; the threshold was never moved to fit the image. The IFSC line is
+`SYNB0234567`: the earlier `SYNB0001234` read at 89.5%, too close to the field's 88% threshold. `npm run fixtures -- apps/web/public/samples` regenerates them
 where the frontend serves them.

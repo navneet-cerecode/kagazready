@@ -82,7 +82,7 @@ export function bankDocument(options: BankOptions = {}): OcrDocument {
   const {
     accountHolderName = 'Priya Rameshbhai Patel',
     accountNumber = '3049 8812 7745',
-    ifsc = 'SYNB0001234',
+    ifsc = 'SYNB0234567',
     nameConfidence = 96.4,
     accountNumberConfidence = 94.1,
   } = options;
