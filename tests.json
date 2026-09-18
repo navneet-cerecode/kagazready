@@ -460,17 +460,17 @@
       "id": "review-security",
       "description": "Repository-grounded security review completed and practical high-priority findings fixed.",
       "type": "review",
-      "status": "not_run",
-      "evidence": "Scheduled for phases 9 and 11.",
-      "lastRun": null
+      "status": "passing",
+      "evidence": "Reviewed services/template.yaml, services/api/src/**, apps/web/src/**, customHttp.yml, .gitignore; npm audit --omit=dev 0 vulnerabilities; repo grep for key patterns and the account id clean. One documentation defect fixed (read/delete role comment claimed no Bedrock while holding InvokeModel for language switch). No code change needed; residual risks recorded in docs/threat-model.md.",
+      "lastRun": "2026-09-18"
     },
     {
       "id": "review-threat-model",
       "description": "docs/threat-model.md written from the real implementation with mitigations verified.",
       "type": "review",
-      "status": "not_run",
-      "evidence": "Scheduled for phases 9 and 11.",
-      "lastRun": null
+      "status": "passing",
+      "evidence": "docs/threat-model.md written from the deployed implementation: 9 threats, each mitigation cites the file that implements it, residual risks stated and accepted (bearer analysis id, global daily cap, AI-services data policy).",
+      "lastRun": "2026-09-18"
     },
     {
       "id": "review-impeccable-audit",
@@ -492,9 +492,9 @@
       "id": "review-animations",
       "description": "Animation review run; motion is purposeful, causes no layout shift, and is verified on a mid-range mobile viewport.",
       "type": "review",
-      "status": "not_run",
-      "evidence": "Playwright asserts CLS < 0.1 on first render in all three projects. Animation review itself still to run.",
-      "lastRun": null
+      "status": "passing",
+      "evidence": "Emil Kowalski review-animations standard applied to every motion line (App.tsx, ResultSheet.tsx, ArchitectureDrawer.tsx, ProofSheet.tsx, tokens.css). Four findings fixed in db0f4b4: ease-in on withdraw -> ease-out 200ms; entrances 380-400ms -> 300ms; progress bar width -> scaleX; global reduced-motion kill -> targeted gating. Verdict: approve. Playwright reduced-motion and Pixel 7 projects cover reduced motion and mobile; CLS < 0.1.",
+      "lastRun": "2026-09-18"
     },
     {
       "id": "config-empty-env",
@@ -546,9 +546,9 @@
     }
   ],
   "summary": {
-    "passing": 62,
+    "passing": 65,
     "blocked": 1,
-    "not_run": 4
+    "not_run": 1
   },
   "deployment": {
     "apiBaseUrl": "https://qev138fuyk.execute-api.ap-south-1.amazonaws.com/prod",
