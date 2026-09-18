@@ -139,7 +139,7 @@ const en: UiStrings = {
 
   deleteHeading: 'Finished?',
   deleteBody:
-    'Delete the uploaded photos and this result now. They are removed automatically within a day either way.',
+    'Delete the uploaded photos and this result now. They are removed automatically within a day or two either way.',
   deleteAction: 'Delete everything',
   deleteConfirm: 'Yes, delete',
   deleteCancel: 'Keep for now',
@@ -153,10 +153,11 @@ const en: UiStrings = {
   archIntro: 'Every check follows the same path. No document is kept beyond it.',
   archSteps: [
     'Your browser uploads each photo straight to a private Amazon S3 bucket using a short-lived, size-limited signed request.',
-    'An AWS Lambda function confirms the upload, then asks Amazon Textract to read the text line by line, with a confidence score for each line.',
+    'An AWS Lambda function confirms each upload is really there, within size and of the right type, and counts the check against a daily cap — before anything is read.',
+    'Amazon Textract reads the text line by line and reports a confidence score for each line. The account number is masked the moment it is read.',
     'Deterministic rules — ordinary code, tested and readable — compare names, check formats and thresholds, and decide the status. This step decides everything.',
     'Amazon Bedrock is asked only to restate each finding in plain words in your language. It cannot change a finding or a status; if it fails, reviewed English is used.',
-    'The result is stored in Amazon DynamoDB with an expiry, and the photos expire from S3 within a day. Delete removes both immediately.',
+    'The result is stored in Amazon DynamoDB with an expiry, and the photos expire from S3 within a day or two. Delete removes both immediately.',
   ],
   archBoundary:
     'Nothing here judges eligibility or authenticity. Status comes from rules you could read; the language model only rephrases.',
@@ -232,7 +233,7 @@ const hi: UiStrings = {
 
   deleteHeading: 'हो गया?',
   deleteBody:
-    'अपलोड की गई फ़ोटो और यह परिणाम अभी हटा दें। वैसे भी ये एक दिन के भीतर अपने आप हट जाते हैं।',
+    'अपलोड की गई फ़ोटो और यह परिणाम अभी हटा दें। वैसे भी ये एक-दो दिन के भीतर अपने आप हट जाते हैं।',
   deleteAction: 'सब कुछ हटाएँ',
   deleteConfirm: 'हाँ, हटाएँ',
   deleteCancel: 'अभी रहने दें',
@@ -246,10 +247,11 @@ const hi: UiStrings = {
   archIntro: 'हर जाँच एक ही रास्ते से गुज़रती है। कोई दस्तावेज़ उसके बाद नहीं रखा जाता।',
   archSteps: [
     'आपका ब्राउज़र हर फ़ोटो सीधे एक निजी Amazon S3 बकेट में अपलोड करता है — थोड़े समय के लिए वैध, आकार-सीमित हस्ताक्षरित अनुरोध से।',
-    'एक AWS Lambda फ़ंक्शन अपलोड की पुष्टि करता है, फिर Amazon Textract से टेक्स्ट पंक्ति-दर-पंक्ति पढ़वाता है, हर पंक्ति के भरोसे के अंक के साथ।',
+    'एक AWS Lambda फ़ंक्शन पुष्टि करता है कि हर अपलोड सचमुच मौजूद है, आकार-सीमा में है और सही प्रकार का है, और जाँच को दैनिक सीमा में गिनता है — कुछ भी पढ़े जाने से पहले।',
+    'Amazon Textract टेक्स्ट पंक्ति-दर-पंक्ति पढ़ता है और हर पंक्ति के लिए भरोसे का अंक देता है। खाता संख्या पढ़ते ही छिपा दी जाती है।',
     'तय नियम — साधारण, परखा हुआ, पढ़ने योग्य कोड — नाम मिलाते हैं, प्रारूप और सीमाएँ जाँचते हैं, और स्थिति तय करते हैं। यही चरण सब कुछ तय करता है।',
     'Amazon Bedrock से सिर्फ़ इतना कहा जाता है कि हर निष्कर्ष को आपकी भाषा में सरल शब्दों में दोहराए। वह निष्कर्ष या स्थिति नहीं बदल सकता; विफल होने पर समीक्षित अंग्रेज़ी दिखती है।',
-    'परिणाम Amazon DynamoDB में समय-सीमा के साथ रखा जाता है, और फ़ोटो एक दिन के भीतर S3 से हट जाती हैं। हटाएँ दबाने पर दोनों तुरंत हटते हैं।',
+    'परिणाम Amazon DynamoDB में समय-सीमा के साथ रखा जाता है, और फ़ोटो एक-दो दिन के भीतर S3 से हट जाती हैं। हटाएँ दबाने पर दोनों तुरंत हटते हैं।',
   ],
   archBoundary:
     'यहाँ कुछ भी पात्रता या असलियत नहीं परखता। स्थिति ऐसे नियमों से आती है जिन्हें आप पढ़ सकते हैं; भाषा मॉडल सिर्फ़ शब्द बदलता है।',
@@ -325,7 +327,7 @@ const gu: UiStrings = {
 
   deleteHeading: 'પૂરું થયું?',
   deleteBody:
-    'અપલોડ કરેલા ફોટા અને આ પરિણામ હમણાં જ કાઢી નાખો. એમ પણ તે એક દિવસમાં આપોઆપ કાઢી નંખાય છે.',
+    'અપલોડ કરેલા ફોટા અને આ પરિણામ હમણાં જ કાઢી નાખો. એમ પણ તે એક-બે દિવસમાં આપોઆપ કાઢી નંખાય છે.',
   deleteAction: 'બધું કાઢી નાખો',
   deleteConfirm: 'હા, કાઢી નાખો',
   deleteCancel: 'હમણાં રહેવા દો',
@@ -339,10 +341,11 @@ const gu: UiStrings = {
   archIntro: 'દરેક તપાસ એક જ માર્ગે થાય છે. કોઈ દસ્તાવેજ તે પછી રખાતો નથી.',
   archSteps: [
     'તમારું બ્રાઉઝર દરેક ફોટો સીધો ખાનગી Amazon S3 બકેટમાં અપલોડ કરે છે — ટૂંકા સમય માટે માન્ય, કદ-મર્યાદિત સહી કરેલી વિનંતીથી.',
-    'એક AWS Lambda ફંક્શન અપલોડની ખાતરી કરે છે, પછી Amazon Textract પાસે લખાણ લીટી-દર-લીટી વંચાવે છે, દરેક લીટીના ભરોસાના આંક સાથે.',
+    'એક AWS Lambda ફંક્શન ખાતરી કરે છે કે દરેક અપલોડ ખરેખર હાજર છે, કદ-મર્યાદામાં છે અને સાચા પ્રકારનો છે, અને તપાસને દૈનિક મર્યાદામાં ગણે છે — કંઈ પણ વંચાય તે પહેલાં.',
+    'Amazon Textract લખાણ લીટી-દર-લીટી વાંચે છે અને દરેક લીટી માટે ભરોસાનો આંક આપે છે. ખાતા નંબર વંચાતાં જ ઢાંકી દેવાય છે.',
     'નક્કી નિયમો — સાદો, ચકાસેલો, વાંચી શકાય તેવો કોડ — નામ મેળવે છે, ફોર્મેટ અને મર્યાદા તપાસે છે, અને સ્થિતિ નક્કી કરે છે. આ પગલું જ બધું નક્કી કરે છે.',
     'Amazon Bedrock ને ફક્ત એટલું કહેવાય છે કે દરેક તારણ તમારી ભાષામાં સરળ શબ્દોમાં ફરી કહે. તે તારણ કે સ્થિતિ બદલી શકતું નથી; નિષ્ફળ જાય તો સમીક્ષિત અંગ્રેજી બતાવાય છે.',
-    'પરિણામ Amazon DynamoDB માં સમય-મર્યાદા સાથે રખાય છે, અને ફોટા એક દિવસમાં S3 માંથી નીકળી જાય છે. કાઢી નાખો દબાવતાં બંને તરત નીકળે છે.',
+    'પરિણામ Amazon DynamoDB માં સમય-મર્યાદા સાથે રખાય છે, અને ફોટા એક-બે દિવસમાં S3 માંથી નીકળી જાય છે. કાઢી નાખો દબાવતાં બંને તરત નીકળે છે.',
   ],
   archBoundary:
     'અહીં કંઈ પણ પાત્રતા કે અસલિયત ચકાસતું નથી. સ્થિતિ એવા નિયમોથી આવે છે જે તમે વાંચી શકો; ભાષા મોડેલ ફક્ત શબ્દો બદલે છે.',

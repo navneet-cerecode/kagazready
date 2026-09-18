@@ -6,7 +6,8 @@ import { Icon } from './Icon.js';
 
 /**
  * "How AWS powers this" — a native dialog, so focus trapping, Escape and the backdrop come from the
- * browser. GSAP only moves the panel in and out; with reduced motion it simply appears.
+ * browser. GSAP only moves the panel in; closing is instant, and with reduced motion it simply
+ * appears.
  */
 interface ArchitectureDrawerProps {
   open: boolean;
@@ -61,7 +62,7 @@ export function ArchitectureDrawer({ open, onClose, strings }: ArchitectureDrawe
         ref={panel}
         className="flex h-full flex-col rounded-t-md bg-paper shadow-drawer sm:h-auto sm:rounded-md"
       >
-        <div className="hairline-b flex items-center justify-between px-5 py-4 sm:px-6">
+        <div className="hairline-b flex items-center justify-between px-5 py-4 pt-[calc(1rem+env(safe-area-inset-top))] sm:px-6 sm:pt-4">
           <h2 id="arch-heading" className="font-display text-heading m-0 text-ink">
             {strings.howItWorks}
           </h2>
@@ -75,7 +76,7 @@ export function ArchitectureDrawer({ open, onClose, strings }: ArchitectureDrawe
           </button>
         </div>
 
-        <div className="overflow-y-auto px-5 py-5 sm:px-6">
+        <div className="overflow-y-auto overscroll-contain px-5 py-5 pb-[calc(1.25rem+env(safe-area-inset-bottom))] sm:px-6 sm:pb-5">
           <p className="mt-0 text-body text-graphite">{strings.archIntro}</p>
 
           <ol className="m-0 mt-4 list-none p-0">

@@ -2,6 +2,7 @@ import { render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { ApiClientError } from './api/client.js';
+import { UI } from './i18n/ui.js';
 import { ANALYSIS_ID, incomplete, needsReview, noIssues, pngFile } from './test/fixtures.js';
 
 vi.mock('./api/client.js', async (importOriginal) => {
@@ -374,6 +375,20 @@ describe('keyboard and motion', () => {
 
     await user.click(screen.getByRole('button', { name: 'Close' }));
     await waitFor(() => expect(dialog).not.toHaveAttribute('open'));
+  });
+
+  it('labels every architecture step with the service it describes, in every language', () => {
+    // The drawer pairs archServices[i] with archSteps[i]. When the two lists drift apart, the
+    // labels shift silently and "Amazon Textract" ends up heading the paragraph about the rules.
+    for (const language of ['en', 'hi', 'gu'] as const) {
+      expect(UI[language].archSteps).toHaveLength(UI[language].archServices.length);
+    }
+    const [, lambda, textract, rules, bedrock, dynamo] = UI.en.archSteps;
+    expect(lambda).toMatch(/lambda/i);
+    expect(textract).toMatch(/textract/i);
+    expect(rules).toMatch(/deterministic rules/i);
+    expect(bedrock).toMatch(/bedrock/i);
+    expect(dynamo).toMatch(/dynamodb/i);
   });
 
   it('with reduced motion, a new result is shown immediately with nothing held back', async () => {
