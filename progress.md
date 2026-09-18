@@ -37,13 +37,14 @@ Claude Code session.
   and `docs/threat-model.md` (`ba81f25`), the full documentation set with `DESIGN.md`
   (`a1824ea`), README screenshots (`b42a2bc`) — all done 2026-09-18.
 
-**Not yet deployed:** `18aacc3` (padding/measure polish) and `db0f4b4` (motion fixes) are built
-and verified locally but the `aws login` session expired before `scripts/deploy-web.py` could
-run. Deploy them, then re-run the detector at 1280x800 and 390x844 and the Playwright desktop
-project against the public URL, and refresh `docs/screenshots/` if anything visible changed.
+- Deployed as Amplify job 4 on 2026-09-18 with the polish, motion and distill commits; live
+  detector reports only `cream-palette` at both viewports; Playwright desktop 5/5.
+- **Public repository created and pushed with the user's approval:**
+  https://github.com/navneet-cerecode/kagazready (the AWS account id was found in one unpushed
+  commit and removed by a local rebase before the first push; history is clean).
 
-Remaining: that deployment; Ponytail review (plugin not installed); public GitHub repository
-(needs the owner/repo name and explicit approval); Bedrock smoke test if the quota case succeeds.
+Remaining: Ponytail review (plugin not installed); the demo video and submission form (team);
+Bedrock smoke test if the quota case succeeds.
 
 ## AWS credits (checked in the Billing console 2026-09-18)
 
@@ -328,14 +329,13 @@ per-request, and S3 holds a few kilobytes that expire within a day.
 
 ## Next action
 
-1. User runs `aws login`; then:
-   `VITE_API_BASE_URL=https://qev138fuyk.execute-api.ap-south-1.amazonaws.com/prod npm run build -w @kagazready/web`
-   and `python scripts/deploy-web.py`; re-run the detector on the live URL (both viewports) and
-   `E2E_BASE_URL=... npx playwright test --project=desktop-chromium`; update `tests.json`.
+1. Team: record the three-minute video (`docs/demo-script.md` shot list), upload to YouTube,
+   publish the Builder Center blog (`docs/builder-center-blog.md`), submit the form before the
+   Sunday deadline. Add the video link to `docs/submission-writeup.md` and `README.md`.
 2. Ponytail review once the user installs the plugin
    (`/plugin marketplace add DietrichGebert/ponytail`, `/plugin install ponytail@ponytail`).
 3. If the support case raises the Bedrock quotas: redeploy with
    `BedrockModelId=apac.amazon.nova-lite-v1:0`, run the en/hi/gu smoke test, update
    `tests.json`, `docs/limitations.md`, `README.md`.
-4. Ask the user for the GitHub owner/repo name; create and push only with explicit approval.
-   Before pushing: grep the tracked files for the AWS account id; it must appear nowhere.
+4. Every later push goes to `origin main` with plain `git push`; never force-push. Grep the
+   tracked files for the AWS account id before each push; it must appear nowhere.

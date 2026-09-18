@@ -477,7 +477,7 @@
       "description": "Impeccable critique run and material findings addressed; audit/polish still to run.",
       "type": "review",
       "status": "passing",
-      "evidence": "Critique 2026-09-18, dual-agent (heuristics 29/40; deterministic detector 0 source findings; live-URL warnings triaged: low-contrast disabled button and skipped heading fixed, four others measured as false positives). Fixed in e6bdbad: incomplete dead end (Add photo/Replace photo inside each mark), 'Marks' -> 'What to fix', status stated in text, html lang set for the detected language, 14px Indic floor, 44px targets, sample-overwrite guard. Redeployed (Amplify job 3), Playwright desktop 5/5 re-passed.",
+      "evidence": "Critique 2026-09-18, dual-agent (heuristics 29/40; deterministic detector 0 source findings; live-URL warnings triaged: low-contrast disabled button and skipped heading fixed, four others measured as false positives). Fixed in e6bdbad: incomplete dead end (Add photo/Replace photo inside each mark), 'Marks' -> 'What to fix', status stated in text, html lang set for the detected language, 14px Indic floor, 44px targets, sample-overwrite guard. Redeployed (Amplify job 3), Playwright desktop 5/5 re-passed. Audit 19/20 and polish (18aacc3) deployed as Amplify job 4 on 2026-09-18; live detector at 1280x800 and 390x844 then reports only cream-palette (the pinned direction); Playwright desktop 5/5 re-passed on the new deployment.",
       "lastRun": "2026-09-18"
     },
     {
@@ -541,7 +541,7 @@
       "description": "The frontend is served from Amplify Hosting at a public URL with CSP, HSTS, X-Frame-Options DENY, nosniff, no-referrer and a Permissions-Policy.",
       "type": "aws",
       "status": "passing",
-      "evidence": "aws amplify create-app/create-deployment/start-deployment -> SUCCEED; curl -D - https://main.d109ovvm872kui.amplifyapp.com shows every header from apps/web/customHttp.yml. Full sample journey completed on the public URL under the strict CSP.",
+      "evidence": "aws amplify create-app/create-deployment/start-deployment -> SUCCEED; curl -D - https://main.d109ovvm872kui.amplifyapp.com shows every header from apps/web/customHttp.yml. Full sample journey completed on the public URL under the strict CSP. Redeployed 2026-09-18 (job 4) with the polish, motion and distill commits; Playwright desktop 5/5 on the new build.",
       "lastRun": "2026-09-18"
     },
     {
@@ -579,6 +579,7 @@
       "activeCreditsUsd": 120.0,
       "usedUsd": 0.0,
       "note": "$100 AWS Free Tier credit (to 2027-08-31) + $20 'Explore AWS: Lambda' credit. All services used by KagazReady are on the covered list. Textract free-tier: 82 of 1000 pages used."
-    }
+    },
+    "repository": "https://github.com/navneet-cerecode/kagazready"
   }
 }
