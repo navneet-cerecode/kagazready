@@ -477,6 +477,70 @@ describe('POST /analyses', () => {
     expect(result(response).body).not.toContain('InternalServerError');
   });
 
+  it('lets the same analysis id try again after a failed run', async () => {
+    // First attempt: one upload never landed in S3.
+    wire({ objects: { [MARKSHEET_KEY]: IMAGE, [INCOME_KEY]: IMAGE } });
+    const failed = await analysesHandler(createAnalysisEvent());
+    expect(result(failed).statusCode).toBe(400);
+    expect(dynamo.items.has(`analysis#${ANALYSIS_ID}`)).toBe(false);
+
+    // The student uploads the missing document and presses the button again with the same id.
+    const s3After = fakeS3({
+      objects: { [MARKSHEET_KEY]: IMAGE, [INCOME_KEY]: IMAGE, [BANK_KEY]: IMAGE },
+    });
+    setS3Client(s3After.client);
+    const retry = await analysesHandler(createAnalysisEvent());
+
+    expect(result(retry).statusCode).toBe(201);
+    expect(bodyOf<AnalysisResponse>(retry).status).toBe('needs_review');
+  });
+
+  it('rolls back the processing item when Textract fails, so a retry is not answered 409', async () => {
+    wire({ textractFailsFor: BANK_KEY });
+    const failed = await analysesHandler(createAnalysisEvent());
+    expect(result(failed).statusCode).toBe(503);
+    expect(dynamo.items.has(`analysis#${ANALYSIS_ID}`)).toBe(false);
+
+    // Textract recovers; the same table, the same id.
+    setTextractClient(fakeTextract(scenarioAOcr()).client);
+    const retry = await analysesHandler(createAnalysisEvent());
+
+    expect(result(retry).statusCode).toBe(201);
+    expect(dynamo.items.get(`analysis#${ANALYSIS_ID}`)?.state).toBe('complete');
+  });
+
+  it('still answers 409 while a fresh run is genuinely in progress', async () => {
+    await analysesHandler(createAnalysisEvent());
+    const item = dynamo.items.get(`analysis#${ANALYSIS_ID}`)!;
+    dynamo.items.set(`analysis#${ANALYSIS_ID}`, {
+      ...item,
+      state: 'processing',
+      updatedAt: new Date().toISOString(),
+    });
+
+    const response = await analysesHandler(createAnalysisEvent());
+
+    expect(result(response).statusCode).toBe(409);
+    expect(bodyOf<ApiError>(response).error.code).toBe('conflict');
+  });
+
+  it('takes over a processing item that outlived the function timeout', async () => {
+    await analysesHandler(createAnalysisEvent());
+    const callsAfterFirst = textract.requestedKeys.length;
+    const item = dynamo.items.get(`analysis#${ANALYSIS_ID}`)!;
+    dynamo.items.set(`analysis#${ANALYSIS_ID}`, {
+      ...item,
+      state: 'processing',
+      updatedAt: new Date(Date.now() - 5 * 60 * 1000).toISOString(),
+    });
+
+    const response = await analysesHandler(createAnalysisEvent());
+
+    expect(result(response).statusCode).toBe(201);
+    expect(textract.requestedKeys.length).toBe(callsAfterFirst + 3);
+    expect(dynamo.items.get(`analysis#${ANALYSIS_ID}`)?.state).toBe('complete');
+  });
+
   it('stops before Textract once the daily cap is reached', async () => {
     process.env.DAILY_ANALYSIS_CAP = '1';
     resetConfigCache();

@@ -169,23 +169,6 @@ export async function putExplanations(
   );
 }
 
-/** Roll an analysis back to processing so a failed run cannot leave it stuck. */
-export async function markProcessing(analysisId: string): Promise<void> {
-  await table().send(
-    new UpdateCommand({
-      TableName: config().tableName,
-      Key: { pk: analysisKey(analysisId) },
-      UpdateExpression: 'SET #state = :processing, updatedAt = :now',
-      ConditionExpression: 'attribute_exists(pk)',
-      ExpressionAttributeNames: { '#state': 'state' },
-      ExpressionAttributeValues: {
-        ':processing': 'processing',
-        ':now': new Date().toISOString(),
-      },
-    }),
-  );
-}
-
 export async function deleteAnalysis(analysisId: string): Promise<void> {
   await table().send(
     new DeleteCommand({ TableName: config().tableName, Key: { pk: analysisKey(analysisId) } }),

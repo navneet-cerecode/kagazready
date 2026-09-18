@@ -7,7 +7,12 @@ import {
   SCHOLARSHIP_READINESS_TEMPLATE,
   type DocumentType,
 } from '@kagazready/contracts';
-import { createProcessingAnalysis, getAnalysis, type StoredAnalysis } from '../adapters/store.js';
+import {
+  createProcessingAnalysis,
+  deleteAnalysis,
+  getAnalysis,
+  type StoredAnalysis,
+} from '../adapters/store.js';
 import {
   badRequest,
   conflict,
@@ -45,41 +50,80 @@ async function createAnalysis(
     documents[document.documentType] = document.objectKey;
   }
 
-  const created = await createProcessingAnalysis({
-    analysisId: request.analysisId,
-    language: request.language,
-    templateId: template.id,
-    templateVersion: template.version,
-    documents,
-  });
+  const start = () =>
+    createProcessingAnalysis({
+      analysisId: request.analysisId,
+      language: request.language,
+      templateId: template.id,
+      templateVersion: template.version,
+      documents,
+    });
 
-  if (!created) {
+  if (!(await start())) {
     // Idempotency: the same analysis ID arriving twice must not pay for Textract twice.
     const existing = await getAnalysis(request.analysisId);
     if (!existing) throw conflict('That check has expired. Please start again.');
-    if (existing.state === 'processing') {
-      throw conflict('That check is already being processed. Please wait a moment.');
-    }
 
-    log('info', 'returning existing analysis for repeated request', {
-      correlationId,
-      analysisId: request.analysisId,
-    });
-    const presented = await presentAnalysis(existing, request.language);
-    return jsonResponse(200, presented.response, correlationId);
+    if (existing.state === 'processing') {
+      if (!isStaleProcessing(existing)) {
+        throw conflict('That check is already being processed. Please wait a moment.');
+      }
+      // A run that never finished — the function timed out mid-Textract — must not lock the
+      // student out of their own analysis id for the rest of the TTL. Take it over.
+      log('warn', 'taking over a stale processing analysis', {
+        correlationId,
+        analysisId: request.analysisId,
+        updatedAt: existing.updatedAt,
+      });
+      await deleteAnalysis(request.analysisId);
+      if (!(await start())) {
+        throw conflict('That check is already being processed. Please wait a moment.');
+      }
+    } else {
+      log('info', 'returning existing analysis for repeated request', {
+        correlationId,
+        analysisId: request.analysisId,
+      });
+      const presented = await presentAnalysis(existing, request.language);
+      return jsonResponse(200, presented.response, correlationId);
+    }
   }
 
   const stored = await getAnalysis(request.analysisId);
   if (!stored) throw conflict('That check could not be started. Please try again.');
 
-  const response = await runAnalysis({
-    stored,
-    documents,
-    language: request.language,
-    correlationId,
-  });
+  try {
+    const response = await runAnalysis({
+      stored,
+      documents,
+      language: request.language,
+      correlationId,
+    });
+    return jsonResponse(201, response, correlationId);
+  } catch (error) {
+    // A failed run must not leave the item in 'processing': the same id, with the same uploads
+    // already in S3, has to be able to try again once the cause (a missing upload, a Textract
+    // outage, the daily cap) has passed. Without this, every retry answered 409 until the TTL.
+    await deleteAnalysis(request.analysisId).catch((cleanupError: unknown) =>
+      log('error', 'could not roll back a failed analysis', {
+        correlationId,
+        analysisId: request.analysisId,
+        errorName: cleanupError instanceof Error ? cleanupError.name : 'unknown',
+      }),
+    );
+    throw error;
+  }
+}
 
-  return jsonResponse(201, response, correlationId);
+/**
+ * Longer than the function's own timeout (29 s), so a 'processing' item this old can only belong
+ * to a run that is no longer executing.
+ */
+const PROCESSING_STALE_MS = 90_000;
+
+function isStaleProcessing(stored: StoredAnalysis): boolean {
+  const updated = Date.parse(stored.updatedAt);
+  return Number.isNaN(updated) || Date.now() - updated > PROCESSING_STALE_MS;
 }
 
 /** PUT /analyses/{analysisId}/documents/{documentType} */

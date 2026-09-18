@@ -179,9 +179,10 @@ Resources:
   # Functions
   #
   # Four functions rather than one, so that each carries only the permissions its routes need.
-  # The function that can spend money on Textract cannot delete anything; the function that can
-  # delete cannot call Textract (it may call Bedrock, only to translate a result that already
-  # exists); the health check can do none of it.
+  # The function that can spend money on Textract cannot delete uploads (it may only remove its
+  # own unfinished table item so a failed run can be retried); the function that can delete
+  # cannot call Textract (it may call Bedrock, only to translate a result that already exists);
+  # the health check can do none of it.
   # ---------------------------------------------------------------------------
 
   UploadsLogGroup:
@@ -238,6 +239,15 @@ Resources:
               Action: s3:GetObject
               Resource: !Sub '${UploadBucket.Arn}/uploads/*'
             - Effect: Allow
+              # Without ListBucket, S3 answers HeadObject on a key that does not exist with 403
+              # rather than 404, and "please upload that document again" became a 500 in
+              # production while the mocked tests passed. Scoped to the upload prefix only.
+              Action: s3:ListBucket
+              Resource: !GetAtt UploadBucket.Arn
+              Condition:
+                StringLike:
+                  's3:prefix': 'uploads/*'
+            - Effect: Allow
               # DetectDocumentText is not resource-scoped by Textract.
               Action: textract:DetectDocumentText
               Resource: '*'
@@ -251,6 +261,9 @@ Resources:
                 - dynamodb:GetItem
                 - dynamodb:PutItem
                 - dynamodb:UpdateItem
+                # DeleteItem only to roll back its own 'processing' item when a run fails, so the
+                # analysis id can be retried. It still cannot delete uploads.
+                - dynamodb:DeleteItem
               Resource: !GetAtt AnalysisTable.Arn
       Events:
         CreateAnalysis:
